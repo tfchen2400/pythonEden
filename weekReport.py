@@ -26,7 +26,7 @@ def login_web(people):
 
     for key in people:
         f.writelines(people[key] + '\n')
-        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId=3081804"
+        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId="+key
         response = s.get(afterURL, cookies=login.cookies, headers=headers)
 
         responseUTF8 = response.content.decode("UTF-8")
@@ -49,6 +49,7 @@ def login_web(people):
             # print(i, item)
             evertTd = re.findall("<td.*?</td>", item, re.S)
             info = "";
+            #print(evertTd)
             for j, td in enumerate(evertTd):
                 # print(j, td)
                 content = re.search('<strong>(.*?)</strong>', td, re.S)
@@ -61,14 +62,15 @@ def login_web(people):
                     content = re.search('confluenceTd">(.*?)</td>', td, re.S)
                     content = content.group(1)
                     info = info + content + '\t'
-                    # print(content)
-            # print(info)
+                    #print(content)
+            print(info)
             f.writelines(info + '\n')
             # print("---------------------")
         f.writelines("----------------------------------" + '\n')
 
+
 if __name__ == '__main__':
-    people = {"3081804": "陈腾飞", "2130626": "王薪水"}
+    people = {"3081804": "陈腾飞", "2130626": "王薪水", "1475258": "戚益益"}
     for key in people:
         print(people[key])
     login_web(people)
