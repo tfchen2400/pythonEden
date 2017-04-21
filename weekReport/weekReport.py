@@ -9,7 +9,7 @@ import time
 
 def login_web(people):
     timestr = time.strftime("%Y%m%d%H%M%S", time.localtime())
-    f = open('weekReport' + timestr + '.txt', 'a', encoding='utf8')
+    f = open('weekReport' + timestr + '.html', 'a', encoding='utf8')
 
     url = 'http://wiki.mchz.com.cn/login.action'
     # print(url)
@@ -24,9 +24,16 @@ def login_web(people):
 
     login = s.post(loginURL, data=data, headers=headers)
 
+    f.writelines("<!DOCTYPE HTML>")
+    f.writelines("<html>")
+    f.writelines("<head>")
+    f.writelines("<link rel='stylesheet' href='css/table.css' /> ")
+    f.writelines("</head>")
+    f.writelines("<body>")
     for key in people:
+        f.writelines("---------------------------------------------------" + '</br>')
         f.writelines(people[key] + '\n')
-        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId="+key
+        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId=" + key
         response = s.get(afterURL, cookies=login.cookies, headers=headers)
 
         responseUTF8 = response.content.decode("UTF-8")
@@ -38,8 +45,11 @@ def login_web(people):
 
         # 只要第一个
         lastWeekReport = everyTable[0]
-        # print(lastWeekReport)
-
+        #print("||||||||||||||||||||||||||")
+        #print(lastWeekReport)
+        f.writelines(lastWeekReport)
+        #print("||||||||||||||||||||||||||")
+        """
         # 取每行数据
         everyTr = re.findall('<tr>.*?</tr>', lastWeekReport, re.S)
         # print("---------------------------------------------------------------")
@@ -49,7 +59,7 @@ def login_web(people):
             # print(i, item)
             evertTd = re.findall("<td.*?</td>", item, re.S)
             info = "";
-            #print(evertTd)
+            # print(evertTd)
             for j, td in enumerate(evertTd):
                 # print(j, td)
                 content = re.search('<strong>(.*?)</strong>', td, re.S)
@@ -62,15 +72,18 @@ def login_web(people):
                     content = re.search('confluenceTd">(.*?)</td>', td, re.S)
                     content = content.group(1)
                     info = info + content + '\t'
-                    #print(content)
+                    # print(content)
             print(info)
             f.writelines(info + '\n')
             # print("---------------------")
         f.writelines("----------------------------------" + '\n')
-
+        """
+    f.writelines("</body>")
+    f.writelines("</html>")
 
 if __name__ == '__main__':
     people = {"3081804": "陈腾飞", "2130626": "王薪水", "1475258": "戚益益"}
     for key in people:
-        print(people[key])
+        pass
+        #print(people[key])
     login_web(people)
