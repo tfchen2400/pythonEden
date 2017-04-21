@@ -30,10 +30,11 @@ def login_web(people):
     f.writelines("<link rel='stylesheet' href='css/table.css' /> ")
     f.writelines("</head>")
     f.writelines("<body>")
-    for key in people:
+    for k, v in people:
+        # print(people[key])
         f.writelines("---------------------------------------------------" + '</br>')
-        f.writelines(people[key] + '\n')
-        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId=" + key
+        f.writelines(v + '\n')
+        afterURL = "http://wiki.mchz.com.cn/pages/viewpage.action?pageId=" + k
         response = s.get(afterURL, cookies=login.cookies, headers=headers)
 
         responseUTF8 = response.content.decode("UTF-8")
@@ -45,10 +46,10 @@ def login_web(people):
 
         # 只要第一个
         lastWeekReport = everyTable[0]
-        #print("||||||||||||||||||||||||||")
-        #print(lastWeekReport)
+        # print("||||||||||||||||||||||||||")
+        # print(lastWeekReport)
         f.writelines(lastWeekReport)
-        #print("||||||||||||||||||||||||||")
+        # print("||||||||||||||||||||||||||")
         """
         # 取每行数据
         everyTr = re.findall('<tr>.*?</tr>', lastWeekReport, re.S)
@@ -81,9 +82,27 @@ def login_web(people):
     f.writelines("</body>")
     f.writelines("</html>")
 
+
+def bt_name(t):
+    return t[1]
+
+
+def sort_by_value(d):
+    items = d.items()
+    backitems = [[v[1], v[0]] for v in items]
+    backitems.sort()
+    return [backitems[i][1] for i in range(0, len(backitems))]
+
+
 if __name__ == '__main__':
-    people = {"3081804": "陈腾飞", "2130626": "王薪水", "1475258": "戚益益"}
-    for key in people:
-        pass
-        #print(people[key])
-    login_web(people)
+    people = {"10847541": "卓勇", "1475258": "戚益益", "1474740": "陈晴", "9437272": "王舒豪", "1474730": "王兆伟", "3081804": "陈腾飞",
+              "3080831": "方格", "2654685": "林华兴"}
+    sorted(people.items(), key=lambda d: d[0])
+    print(sorted(people.items(), key=lambda d: d[1], reverse=True))
+    L = sorted(people.items(), key=lambda d: d[1], reverse=True)
+    # print(L)
+    #for key, v in L:
+    #    print(key)
+    #    print(v)
+    # (people[key])
+    login_web(L)
