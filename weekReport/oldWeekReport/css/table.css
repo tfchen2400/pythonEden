@@ -1,0 +1,24 @@
+/*
+	author	:	weining
+	date	:	2017年4月21日17:15:30
+*/
+.confluenceTable p{margin: 0;}
+.table-wrap{
+	margin:20px 0;
+}
+.confluenceTable{
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+}
+.confluenceTable>thead>tr>td, .confluenceTable>thead>tr>th {
+	border: 1px solid #ddd;
+}
+.confluenceTable>tbody>tr>td, .confluenceTable>tbody>tr>th, .confluenceTable>tfoot>tr>td, .confluenceTable>tfoot>tr>th, .confluenceTable>thead>tr>td, .confluenceTable>thead>tr>th {
+	padding: 8px;
+	line-height: 1.42857143;
+	vertical-align: top;
+	border-top: 1px solid #ddd;
+}
+.confluenceTable>tbody>tr>td, .confluenceTable>tbody>tr>th, .confluenceTable>tfoot>tr>td, .confluenceTable>tfoot>tr>th, .confluenceTable>thead>tr>td, .confluenceTable>thead>tr>th {
+	border: 1px solid #ddd;
+}
