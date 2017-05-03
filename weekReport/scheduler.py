@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 from apscheduler.schedulers.background import BackgroundScheduler
-from weekReport import weekReportHzmc
+import weekReportHzmc
 import time
 import sys
 import os
