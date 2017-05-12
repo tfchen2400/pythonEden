@@ -1,0 +1,41 @@
+2017-05-10 16:28:49,800 - Dcap_db - ERROR - use methodpymssql#####################
+2017-05-10 16:28:49,903 - Dcap_db - ERROR - use methododbc2000#####################
+2017-05-10 16:28:50,055 - Dcap_db - ERROR - use methododbc2005#####################
+2017-05-10 16:28:50,203 - Dcap_db - ERROR - use methododbc2008#####################
+2017-05-10 16:28:50,338 - Dcap_db - ERROR - use methododbc2012#####################
+2017-05-10 16:28:50,515 - Dcap_db - ERROR - use methododbc2014#####################
+2017-05-10 16:29:50,329 - Dcap_db - ERROR - use methodpymssql#####################
+2017-05-10 16:29:50,439 - Dcap_db - ERROR - use methododbc2000#####################
+2017-05-10 16:29:50,571 - Dcap_db - ERROR - use methododbc2005#####################
+2017-05-10 16:29:50,699 - Dcap_db - ERROR - use methododbc2008#####################
+2017-05-10 16:29:50,833 - Dcap_db - ERROR - use methododbc2012#####################
+2017-05-10 16:29:50,946 - Dcap_db - ERROR - use methododbc2014#####################
+2017-05-10 16:30:33,163 - Dcap_db - INFO - use methodpymssql#####################
+2017-05-10 16:30:33,311 - Dcap_db - INFO - use methododbc2000#####################
+2017-05-10 16:30:33,442 - Dcap_db - INFO - use methododbc2005#####################
+2017-05-10 16:30:33,755 - Dcap_db - INFO - use methododbc2008#####################
+2017-05-10 16:30:34,176 - Dcap_db - INFO - use methododbc2012#####################
+2017-05-10 16:30:34,490 - Dcap_db - INFO - use methododbc2014#####################
+2017-05-10 16:57:32,461 - Dcap_db - INFO - use methodpymssql#####################
+2017-05-10 16:57:32,578 - Dcap_db - INFO - use methododbc2000#####################
+2017-05-10 16:57:32,759 - Dcap_db - INFO - use methododbc2005#####################
+2017-05-10 16:57:32,903 - Dcap_db - INFO - use methododbc2008#####################
+2017-05-10 16:57:33,239 - Dcap_db - INFO - use methododbc2012#####################
+2017-05-10 16:57:33,429 - Dcap_db - INFO - use methododbc2014#####################
+2017-05-12 09:13:24,919 - Dcap_db - INFO - use methodpymssql#####################
+2017-05-12 09:13:25,318 - Dcap_db - INFO - use methododbc2000#####################
+2017-05-12 09:13:25,582 - Dcap_db - INFO - use methododbc2005#####################
+2017-05-12 09:13:26,187 - Dcap_db - INFO - use methododbc2008#####################
+2017-05-12 09:13:26,500 - Dcap_db - INFO - use methododbc2012#####################
+2017-05-12 09:13:26,754 - Dcap_db - INFO - use methododbc2014#####################
+2017-05-12 11:23:44,184 - Dcap_db - INFO - use method pymssql #####################
+2017-05-12 11:23:44,273 - Dcap_db - INFO - use method odbc2000 #####################
+2017-05-12 11:23:44,424 - Dcap_db - INFO - use method odbc2005 #####################
+2017-05-12 11:23:44,567 - Dcap_db - INFO - use method odbc2008 #####################
+2017-05-12 11:23:44,708 - Dcap_db - INFO - use method odbc2012 #####################
+2017-05-12 11:23:44,818 - Dcap_db - INFO - use method odbc2014 #####################
+2017-05-12 11:32:48,438 - Dcap_db - INFO - use method odbc2000 #####################
+2017-05-12 11:32:48,615 - Dcap_db - INFO - use method odbc2005 #####################
+2017-05-12 11:32:48,793 - Dcap_db - INFO - use method odbc2008 #####################
+2017-05-12 11:32:48,935 - Dcap_db - INFO - use method odbc2012 #####################
+2017-05-12 11:32:49,075 - Dcap_db - INFO - use method odbc2014 #####################

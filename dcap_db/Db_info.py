@@ -2,8 +2,9 @@
 # coding=utf-8
 
 "dbinfo 存放数据库连接信息"
-class Db_info(object):
 
+
+class Db_info(object):
     type = ""
 
     host = ""
@@ -20,5 +21,10 @@ class Db_info(object):
 
     def __init__(self):
         pass
+
+    def toClass(self, data):
+        pass
+
+
 if __name__ == '__main__':
     db_info = Db_info()
