@@ -4,6 +4,7 @@
     这是Dcap_db的封装类
 """
 import os
+import time
 import pymssql
 import pyodbc
 import logging
@@ -52,6 +53,15 @@ class Dcap_db(object):
                     self.do_sqls_pyodbc(2014)
                 elif m == "sqljdbc4":
                     jdbcStr = "jdbc:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + ";databaseName=" + self.dbinfo.database + ";"
+                    user = self.dbinfo.user
+                    pwd = self.dbinfo.password
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
+                elif m == "jtds13":
+                    jdbcStr = "jdbc:jtds:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + "/" + self.dbinfo.database
                     user = self.dbinfo.user
                     pwd = self.dbinfo.password
                     p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
@@ -128,7 +138,7 @@ class Dcap_db(object):
             except Exception as e:
                 print('Error:', e)
                 self.report.error("runsql" + " error " + sql)
-
+        time.sleep(100)
         cursor.close()
         conn.close()
         pass
@@ -141,19 +151,22 @@ class Dcap_db(object):
         pwd = self.dbinfo.password
         # c    2000
         if (type == 2000):
-            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL Server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd)
-        # c10  2008
+            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL Server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd, APP="SQL Server 2000")
+        # c10  2005
         elif (type == 2005):
-            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL Native Client}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd)
+            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL Native Client}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd, APP="SQL Server 2005")
         # c10  2008
         elif (type == 2008):
-            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL SERVER NATIVE CLIENT 10.0}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd)
+            cnxn = pyodbc.connect(autocommit=True, DRIVER='{SQL SERVER NATIVE CLIENT 10.0}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd,
+                                  APP="SQL Server 2008")
         # c11  2012
         elif (type == 2012):
-            cnxn = pyodbc.connect(autocommit=True, DRIVER='{ODBC Driver 11 for SQL Server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd)
+            cnxn = pyodbc.connect(autocommit=True, DRIVER='{ODBC Driver 11 for SQL Server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd,
+                                  APP="SQL Server 2012")
         # c13 2014
         elif (type == 2014):
-            cnxn = pyodbc.connect(autocommit=True, DRIVER='{ODBC Driver 13 for SQL server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd)
+            cnxn = pyodbc.connect(autocommit=True, DRIVER='{ODBC Driver 13 for SQL server}', SERVER=server, DATABASE=database, uid=uid, pwd=pwd,
+                                  APP="SQL Server 2014")
 
         cursor = cnxn.cursor()
         if not cursor:
@@ -196,70 +209,72 @@ class Dcap_db(object):
 if __name__ == '__main__':
     logging.config.fileConfig("../logging.conf")
 
-    # dcap_db = Dcap_db()
-    # # db info
-    # db_info = Db_info()
-    # db_info.type = "msSql"
-    # db_info.charset = "utf8"
-    # db_info.database = "pubs"
-    # db_info.user = "sa"
-    # db_info.password = "Ctf12345"
-    # db_info.host = "192.168.60.99"
-    # db_info.port = "5211"
-    #
-    # dcap_db.dbinfo = db_info
-    #
-    # sqls = []
-    # sqls.append("SELECT * FROM pubs.dbo.authors")
-    # sqls.append("INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )")
-    # sqls.append("UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'")
-    # sqls.append("DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'")
-    # dcap_db.sqls = sqls
-    #
-    # methods = []
-    # # methods.append("pymssql")
+    dcap_db = Dcap_db()
+    # db info
+    db_info = Db_info()
+    db_info.type = "msSql"
+    db_info.charset = "utf8"
+    db_info.database = "pubs"
+    db_info.user = "sa"
+    db_info.password = "Ctf12345"
+    db_info.host = "192.168.60.99"
+    db_info.port = "5211"
+
+    dcap_db.dbinfo = db_info
+
+    sqls = []
+    sqls.append("SELECT * FROM pubs.dbo.authors")
+    sqls.append("INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )")
+    sqls.append("UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'")
+    sqls.append("DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'")
+    dcap_db.sqls = sqls
+
+    methods = []
+    # methods.append("pymssql")
     # methods.append("odbc2000")
     # methods.append("odbc2005")
     # methods.append("odbc2008")
     # methods.append("odbc2012")
     # methods.append("odbc2014")
-    # dcap_db.methods = methods
-    #
-    # print(dcap_db.dbinfo.host + "," + dcap_db.dbinfo.port)
-    # # dcap_db.do_sqls_pymssql()
-    # dcap_db.do_sqls()
-    # print(sqls)
-
-
-    dcap_db = Dcap_db()
-    # db info
-    db_info = Db_info()
-    db_info.type = "oracle"
-    db_info.database = "wangzw"
-    db_info.user = "scott"
-    db_info.password = "scott"
-    db_info.host = "192.168.60.95"
-    db_info.port = "1521"
-
-    dcap_db.dbinfo = db_info
-
-    sqls = []
-    sqls.append("select * from dept")
-    sqls.append("select * from dept where dname = 'ACCOUNTING'")
-    sqls.append("INSERT INTO dept VALUES (11, 'chentf', 'hz')")
-    sqls.append("UPDATE dept SET dname = 'CHENTF_UPDATE' WHERE DEPTNO = 11")
-    sqls.append("DELETE dept WHERE DEPTNO = 11")
-    dcap_db.sqls = sqls
-
-    methods = []
-    # methods.append("cx_oracle")
-    methods.append("ojdbc14")
-    methods.append("classes12")
-    methods.append("ojdbc5")
-    methods.append("ojdbc6")
-    methods.append("ojdbc7")
-    methods.append("ojdbc8")
-
+    # methods.append("sqljdbc4")
+    methods.append("jtds13")
     dcap_db.methods = methods
 
+    print(dcap_db.dbinfo.host + "," + dcap_db.dbinfo.port)
+    # dcap_db.do_sqls_pymssql()
     dcap_db.do_sqls()
+    print(sqls)
+
+
+    # dcap_db = Dcap_db()
+    # # db info
+    # db_info = Db_info()
+    # db_info.type = "oracle"
+    # db_info.database = "wangzw"
+    # db_info.user = "scott"
+    # db_info.password = "scott"
+    # db_info.host = "192.168.60.95"
+    # db_info.port = "1521"
+    #
+    # dcap_db.dbinfo = db_info
+    #
+    # sqls = []
+    # sqls.append("select * from dept")
+    # sqls.append("select * from dept where dname = 'ACCOUNTING'")
+    # sqls.append("INSERT INTO dept VALUES (11, 'chentf', 'hz')")
+    # sqls.append("UPDATE dept SET dname = 'CHENTF_UPDATE' WHERE DEPTNO = 11")
+    # sqls.append("DELETE dept WHERE DEPTNO = 11")
+    # dcap_db.sqls = sqls
+    #
+    # methods = []
+    # # methods.append("cx_oracle")
+    # methods.append("ojdbc14")
+    # methods.append("classes12")
+    # methods.append("ojdbc5")
+    # methods.append("ojdbc6")
+    # methods.append("ojdbc7")
+    # methods.append("ojdbc8")
+    #
+    # dcap_db.methods = methods
+    #
+    # dcap_db.do_sqls()

@@ -24,6 +24,8 @@ def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls):
         ext_classpath = os.path.join(baseUrl, "oraclelink", "OracleMain_ojdbc8.jar")
     elif (jdbcType == "sqljdbc4"):
         ext_classpath = os.path.join(baseUrl, "oraclelink", "SQL_sqljdbc4.jar")
+    elif (jdbcType == "jtds13"):
+        ext_classpath = os.path.join(baseUrl, "oraclelink", "SQL_jtds13.jar")
     jvmPath = jpype.getDefaultJVMPath()
     # ext_classpath = "E:\Lib\OracleMain_ojdbc14.jar"
     # ext_classpath = "E:\Lib\OraceJdbc.jar"
