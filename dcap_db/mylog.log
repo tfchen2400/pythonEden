@@ -87,3 +87,9 @@
 2017-05-14 21:30:48,277 - Dcap_db - INFO - use method classes12 #####################
 2017-05-14 21:31:07,173 - Dcap_db - INFO - use method ojdbc14 #####################
 2017-05-14 21:31:07,909 - Dcap_db - INFO - use method classes12 #####################
+2017-05-15 09:58:52,536 - Dcap_db - INFO - use method ojdbc14 #####################
+2017-05-15 09:58:53,265 - Dcap_db - INFO - use method classes12 #####################
+2017-05-15 09:58:53,968 - Dcap_db - INFO - use method ojdbc5 #####################
+2017-05-15 09:58:54,929 - Dcap_db - INFO - use method ojdbc6 #####################
+2017-05-15 09:58:55,886 - Dcap_db - INFO - use method ojdbc7 #####################
+2017-05-15 09:58:57,104 - Dcap_db - INFO - use method ojdbc8 #####################

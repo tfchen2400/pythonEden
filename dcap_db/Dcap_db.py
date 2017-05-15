@@ -50,6 +50,15 @@ class Dcap_db(object):
                     self.do_sqls_pyodbc(2012)
                 elif m == "odbc2014":
                     self.do_sqls_pyodbc(2014)
+                elif m == "sqljdbc4":
+                    jdbcStr = "jdbc:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + ";databaseName=" + self.dbinfo.database + ";"
+                    user = self.dbinfo.user
+                    pwd = self.dbinfo.password
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
                 self.report.info("@@@@ " + "use method end" + m + " @@@@")
         elif (self.dbinfo.type == "oracle"):
             for m in self.methods:
@@ -60,6 +69,36 @@ class Dcap_db(object):
                 pwd = self.dbinfo.password
                 if m == "cx_oracle":
                     self.do_sqls_cx_oracle()
+                elif m == "ojdbc5":
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
+                elif m == "ojdbc6":
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
+                elif m == "ojdbc7":
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
+                elif m == "ojdbc8":
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
+                elif m == "classes12":
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    # print('Child process will start.')
+                    p.start()
+                    p.join()
+                    # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc14":
                     p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
                     # print('Child process will start.')
@@ -216,10 +255,11 @@ if __name__ == '__main__':
     # methods.append("cx_oracle")
     methods.append("ojdbc14")
     methods.append("classes12")
-    # methods.append("odbc2005")
-    # methods.append("odbc2008")
-    # methods.append("odbc2012")
-    # methods.append("odbc2014")
+    methods.append("ojdbc5")
+    methods.append("ojdbc6")
+    methods.append("ojdbc7")
+    methods.append("ojdbc8")
+
     dcap_db.methods = methods
 
     dcap_db.do_sqls()
