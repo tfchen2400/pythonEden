@@ -1,0 +1,41 @@
+使用dcap_db 和dcap_solr的文档
+
+dcap_solr 采用 bordercore-solrpy包
+
+地址
+https://github.com/bordercore/bordercore-solrpy的python3分支
+
+dcap_db
+odbc连接连接方式
+需要安装odbc的驱动
+{SQL Server} - released with SQL Server 2000
+{SQL Native Client} - released with SQL Server 2005 (also known as version 9.0)
+{SQL Server Native Client 10.0} - released with SQL Server 2008
+{ODBC Driver 11 for SQL Server} - released with SQL Server 2012
+{ODBC Driver 13 for SQL Server} - released with SQL Server 2014
+
+程序只会在 运行程序服务器 管理库服务器  生产库服务器
+使用同一个 ntp服务器 时间一样的情况下才有效
+ntpdate time.nist.gov
+
+程序会在用户的d盘生成一个report.txt的文件
+这个是程序运行的结果
+
+
+2017年5月15日14:11:02
+添加oracle客户端访问
+https://pypi.python.org/pypi/cx_Oracle/5.3
+下载对应的文件
+我下的是
+cx_Oracle-5.3-12c.win-amd64-py3.5-2.exe (md5)
+win 64位 python35
+然后 下载客户端64位
+复制拷贝oci.dll, oraociei10.dll, oraocci10.dll到python_home
+
+
+2017年5月15日14:12:24
+添加jdbc访问方式
+需要安装jpype包
+此包调用java虚拟机
+安装方式可以参考
+http://www.cnblogs.com/xyb930826/p/6060821.html
