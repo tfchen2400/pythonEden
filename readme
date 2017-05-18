@@ -4,3 +4,4 @@ dcap_db 数据访问 包括oracle sqlserver
 dcap_solr solr简单查询
 weekReport 简单的爬虫
 myutil  瞎写的测试
+my_redis redis的一些测试
