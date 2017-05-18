@@ -3,9 +3,11 @@ import jpype
 
 jvmPath = jpype.getDefaultJVMPath()
 # ext_classpath = "E:\Lib\OracleMain_ojdbc14.jar"
-ext_classpath = "C:\cygwin64\home\tfchen\gitRes\pythonEden\dcap_db\oraclelink\OracleMain_ojdbc8.jar"
+ext_classpath = "E:\Lib\OraceJdbc.jar"
 jvmArg = '-Djava.class.path=' + ext_classpath
 if not jpype.isJVMStarted():
+
+
     jpype.startJVM(jvmPath, jvmArg)
     system = jpype.java.lang.System
     system.out.println('hello world!')

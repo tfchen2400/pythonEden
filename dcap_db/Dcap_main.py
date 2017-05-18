@@ -66,22 +66,22 @@ class Dcap_main(object):
                 dcap_db.dbinfo = db_info
                 dcap_db.do_sqls()
                 self.report.info("$$$$ " + "run sql mode end $$$$")
-                self.report.info("$$$$ " + "solr search mode start $$$$")
-                dcap_solr = Dcap_solr()
-
-                dcap_solr.time = timeStr
-                #dcap_solr.time = "2017-05-11T17:33:19Z"
-                dcap_solr.solr_url = "http://" + managerhost + ":8983/solr"
-                dcap_solr.mysql_url = managerhost
-                dcap_solr.sqls = sqls
+                # self.report.info("$$$$ " + "solr search mode start $$$$")
+                # dcap_solr = Dcap_solr()
+                #
+                # dcap_solr.time = timeStr
+                # # dcap_solr.time = "2017-05-11T17:33:19Z"
+                # dcap_solr.solr_url = "http://" + managerhost + ":8983/solr"
+                # dcap_solr.mysql_url = managerhost
+                # dcap_solr.sqls = sqls
                 # 休息一段时间等待数据进入solr
-                secend = 60 * 3
-                self.report.info("**** thread sleep %d s for data into solr start ****" % secend)
-                time.sleep(secend)
-                self.report.info("**** thread sleep %d s for data into solr end ****" % secend)
-                dcap_solr.find_sqls_in_solr()
-                self.report.info("$$$$ " + "solr search mode end $$$$")
-                self.report.info("#### " + "server " + db_info.host + " end ####")
+                # secend = 60 * 3
+                # self.report.info("**** thread sleep %d s for data into solr start ****" % secend)
+                # time.sleep(secend)
+                # self.report.info("**** thread sleep %d s for data into solr end ****" % secend)
+                # dcap_solr.find_sqls_in_solr()
+                # self.report.info("$$$$ " + "solr search mode end $$$$")
+                # self.report.info("#### " + "server " + db_info.host + " end ####")
         self.report.info("---- " + "exec all end ----")
 
 
@@ -109,21 +109,41 @@ if __name__ == '__main__':
     # 生产库
     servers = []
     servers.append(db_info.__dict__)
-    #servers.append(db_info2.__dict__)
+    # servers.append(db_info2.__dict__)
 
     clients = []
-    #clients.append("pymssql")
-    clients.append("odbc2000")
-    clients.append("odbc2005")
-    clients.append("odbc2008")
-    clients.append("odbc2012")
-    clients.append("odbc2014")
+    # clients.append("pymssql")
+    # clients.append("SQL server 2005")
+    # clients.append("SQL server 2008")
+    # clients.append("SQL server 2012")
+    # clients.append("SQL server 2014")
+    # clients.append("sqlcmd SQL server 2005")
+    # clients.append("sqlcmd SQL server 2008")
+    # clients.append("sqlcmd SQL server 2012")
+    # clients.append("sqlcmd SQL server 2014")
+    clients.append("sqljdbc4")
+    # clients.append("jtds13")
 
     sqls = []
-    sqls.append("SELECT * FROM pubs.dbo.authors")
-    sqls.append("INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )")
-    sqls.append("UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'")
-    sqls.append("DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'")
+    sql_info = {}
+    sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
 
     data["servers"] = servers
     data["clients"] = clients
@@ -133,7 +153,7 @@ if __name__ == '__main__':
     data["condition"] = "condition123"
     data["managerhost"] = "192.168.60.99"
     jsonStr = json.dumps(data)
-    # print(jsonStr)
+    print(jsonStr)
 
     dcap_main = Dcap_main()
     dcap_main.exec_all(jsonStr)
