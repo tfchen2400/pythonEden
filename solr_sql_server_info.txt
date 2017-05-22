@@ -1,13 +1,64 @@
 使用dcap_db 和dcap_solr的文档
 
-dcap_solr 采用 bordercore-solrpy包
+运行环境python3.4/win10
+python3+win
 
+python3.4
+https://www.python.org/downloads/windows/
+Windows x86-64 MSI installer
+
+升级pip
+python -m pip install --upgrade pip
+
+安装pymssql模块
+pip install pymssql
+
+安装pyodbc模块
+pip install pyodbc
+
+安装cx_oracle模块
+https://pypi.python.org/pypi/cx_Oracle/5.3
+下载对应的文件
+我下的是
+cx_Oracle-5.3-12c.win-amd64-py3.5-2.exe (md5)
+双击运行安装
+然后 下载对应的oracle客户端64位
+复制拷贝oci.dll, oraociei10.dll, oraocci10.dll
+到python_home
+
+安装jpype模块
+需要安装vs2015环境
+http://landinghub.visualstudio.com/visual-cpp-build-tools
+pip install jpype1
+如果遇到问题添加环境变量
+VS100COMNTOOLS = %VS140COMNTOOLS%
+或
+VS100COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\
+
+安装solr-py模块
+dcap_solr 采用 bordercore-solrpy包
 地址
 https://github.com/bordercore/bordercore-solrpy的python3分支
+使用git-bash
+git clone https://github.com/bordercore/bordercore-solrpy
+cd bordercore-solrpy
+git pull origin python3:python3
+git checkout python3
+使用cmd 安装python3模块
+python setup.py install
 
-dcap_db
+安装pymysql模块
+pip install pymysql
+
+
+添加odbc驱动
+查看现有的odbc驱动
+控制面板-数据源-odbc64位
+
+
 odbc连接连接方式
 需要安装odbc的驱动
+驱动在tools-odbc下有
 {SQL Server} - released with SQL Server 2000
 {SQL Native Client} - released with SQL Server 2005 (also known as version 9.0)
 {SQL Server Native Client 10.0} - released with SQL Server 2008
@@ -22,20 +73,3 @@ ntpdate time.nist.gov
 这个是程序运行的结果
 
 
-2017年5月15日14:11:02
-添加oracle客户端访问
-https://pypi.python.org/pypi/cx_Oracle/5.3
-下载对应的文件
-我下的是
-cx_Oracle-5.3-12c.win-amd64-py3.5-2.exe (md5)
-win 64位 python35
-然后 下载客户端64位
-复制拷贝oci.dll, oraociei10.dll, oraocci10.dll到python_home
-
-
-2017年5月15日14:12:24
-添加jdbc访问方式
-需要安装jpype包
-此包调用java虚拟机
-安装方式可以参考
-http://www.cnblogs.com/xyb930826/p/6060821.html

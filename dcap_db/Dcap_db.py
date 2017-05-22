@@ -51,11 +51,11 @@ class Dcap_db(object):
                     self.do_sqls_pyodbc("SQL server 2014")
                 elif m == "sqlcmd SQL server 2005":
                     self.do_sqls_pyodbc("sqlcmd SQL server 2005")
-                elif m == "sqlcmd SQL server 2005":
+                elif m == "sqlcmd SQL server 2008":
                     self.do_sqls_pyodbc("sqlcmd SQL server 2008")
-                elif m == "sqlcmd SQL server 2005":
+                elif m == "sqlcmd SQL server 2012":
                     self.do_sqls_pyodbc("sqlcmd SQL server 2012")
-                elif m == "sqlcmd SQL server 2005":
+                elif m == "sqlcmd SQL server 2014":
                     self.do_sqls_pyodbc("sqlcmd SQL server 2014")
                 elif m == "sqljdbc4":
                     jdbcStr = "jdbc:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + ";databaseName=" + self.dbinfo.database + ";"
