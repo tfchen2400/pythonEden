@@ -1,5 +1,13 @@
 使用dcap_db 和dcap_solr的文档
 
+运行环境python3.4/win10
+python3+win
+
+python3.4
+https://www.python.org/downloads/windows/
+Windows x86-64 MSI installer
+
+
 dcap_solr 采用 bordercore-solrpy包
 
 地址
