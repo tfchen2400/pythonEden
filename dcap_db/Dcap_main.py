@@ -108,8 +108,8 @@ if __name__ == '__main__':
 
     # 生产库
     servers = []
-    servers.append(db_info.__dict__)
-    # servers.append(db_info2.__dict__)
+    #servers.append(db_info.__dict__)
+    servers.append(db_info2.__dict__)
 
     clients = []
     # clients.append("pymssql")
@@ -117,11 +117,11 @@ if __name__ == '__main__':
     # clients.append("SQL server 2008")
     # clients.append("SQL server 2012")
     # clients.append("SQL server 2014")
-    # clients.append("sqlcmd SQL server 2005")
-    # clients.append("sqlcmd SQL server 2008")
-    # clients.append("sqlcmd SQL server 2012")
-    # clients.append("sqlcmd SQL server 2014")
-    clients.append("sqljdbc4")
+    clients.append("sqlcmd SQL server 2005")
+    clients.append("sqlcmd SQL server 2008")
+    clients.append("sqlcmd SQL server 2012")
+    clients.append("sqlcmd SQL server 2014")
+    #clients.append("sqljdbc4")
     # clients.append("jtds13")
 
     sqls = []
@@ -152,10 +152,19 @@ if __name__ == '__main__':
     data["target"] = "sqlWhite"
     data["condition"] = "condition123"
     data["managerhost"] = "192.168.60.99"
+
     jsonStr = json.dumps(data)
     print(jsonStr)
+    f = open('./jsonStr.txt', 'w')
+    json.dump(jsonStr, f)
+    f.close()
+
+    f = open('./jsonStr.txt', 'r')
+    jsonStrFile = json.load(f)
+    print(jsonStrFile)
+
 
     dcap_main = Dcap_main()
-    dcap_main.exec_all(jsonStr)
+    dcap_main.exec_all(jsonStrFile)
 
     # print(data)

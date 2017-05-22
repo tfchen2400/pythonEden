@@ -1,0 +1,220 @@
+2017年5月22日09:22:49
+陈腾飞(水言Dade)
+此文档说明
+dcap_db以及dcap_solr的使用
+如果要初步使用
+请详细读Dcap_main类
+
+如果要使用内部某一功能
+可以详细读后面的类
+
+运行的报告保存在d:report.txt中，是增量的。
+所以如果只需要这次运行结果，需要把之前的删除。
+
+Dcap_main类
+注意事项
+    mssql和oracle都支持，但是不能混合使用。
+构造方法
+    def __init__(self):
+    该方法返回一个Dcap_main的实例
+成员方法
+    def exec_all(self, data):
+    执行一切
+        先执行sql,然后在solr内查询是否有结果
+    data: jsonStr
+        json字符串，该字符串包含所有要执行的所有参数，可以通过程序生成，或者直接传入json。
+        通过程序生成json字符串调用
+            data = {}                       //json的字典           jsonObject
+
+            servers = []                    //生产库的信息组       jsonArray
+
+            clients = []                    //测试客户端           jsonArray
+
+            sqls = []                       //测试sql的组          jsonArray
+
+            db_info = Db_info()             //生产库信息
+            db_info.type = "msSql"          //类型 mssql/oracle
+            db_info.charset = "utf8"        //编码 mssql需要设置
+            db_info.database = "pubs"       //数据库名
+            db_info.user = "sa"             //用户名
+            db_info.password = "Ctf12345"   //密码
+            db_info.host = "192.168.60.99"  //地址
+            db_info.port = "5211"           //端口
+
+            servers.append(db_info.__dict__)//添加db_info到生产库信息组
+
+            db_info2.type = "oracle"
+            db_info2.database = "orcl"
+            db_info2.user = "scott"
+            db_info2.password = "scott"
+            db_info2.host = "192.168.200.179"
+            db_info2.port = "1521"
+
+            servers.append(db_info2.__dict__)//添加db_info2到生产库信息组
+
+            // 这里列出支持的所有客户端
+            // 按照驱动来分
+            // 以下是mssql支持的类型
+            clients.append("pymssql")                       //freeTds驱动方式   http://www.pymssql.org/en/stable/
+            clients.append("SQL server 2005")               //SQL Native Client
+            clients.append("SQL server 2008")               //SQL SERVER NATIVE CLIENT 10.0
+            clients.append("SQL server 2012")               //ODBC Driver 11 for SQL Server
+            clients.append("SQL server 2014")               //ODBC Driver 13 for SQL server
+            clients.append("sqljdbc4")                      //sqljdbc4
+            clients.append("jtds13")                        //jtds13
+            // 以下是oracle支持的类型
+            clients.append("cx_oracle")                     //根据您安装的包来定，我这里是oracle_client 11.2.0.4
+            clients.append("ojdbc14")                       //jdbc14
+            clients.append("ojdbc5")                        //jdbc5
+            clients.append("ojdbc6")                        //jdbc6
+            clients.append("ojdbc7")                        //jdbc7
+            clients.append("ojdbc8")                        //jdbc8 需要jdk8的环境
+
+            // ---------mssql示例---------
+            sql_info = {}                                                   //sql_info字典    jsonObject
+            sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"              //sql属性
+            sql_info["par"] = {}                                            //绑定变量属性    mssql暂时没有，好像怎么样审计出的都是带绑定变量的
+            sqls.append(sql_info)                                           //添加sql_info到sqls组
+
+            sql_info = {}
+            sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
+            sql_info["par"] = {}
+            sqls.append(sql_info)
+
+            sql_info = {}
+            sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
+            sql_info["par"] = {}
+            sqls.append(sql_info)
+
+            sql_info = {}
+            sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+            sql_info["par"] = {}
+            sqls.append(sql_info)
+            // ----------------mssql示例结束------------
+
+            // ----------------oracle示例---------------
+            sqls = []
+            sql_info = {}
+            sql_info["sql"] = "select * from dept"
+            sql_info["par"] = {}
+            sqls.append(sql_info)
+
+            sql_info = {}
+            sql_info["sql"] = "select * from dept where dname = :dname"
+            par = {}
+            par["dname"] = "ACCOUNTING"
+            sql_info["par"] = par
+            sqls.append(sql_info)
+
+
+            sql_info = {}
+            sql_info["sql"] = "INSERT INTO dept VALUES (:id, :dname, :city)"
+            par = {}
+            par["id"] = 11
+            par["dname"] = "chentf"
+            par["city"] = "hz"
+            sql_info["par"] = par
+            sqls.append(sql_info)
+
+            sql_info = {}
+            sql_info["sql"] = "UPDATE dept SET dname = :dname WHERE DEPTNO = :id"
+            par = {}
+            par["id"] = 11
+            par["dname"] = "CHENTF_UPDATE"
+            sql_info["par"] = par
+            sqls.append(sql_info)
+
+
+            data["servers"] = servers               //设置生产库属性
+            data["clients"] = clients               //设置客户端属性
+            data["sqls"] = sqls                     //设置运行的sql属性
+            data["level"] = "info"                  //设置信息级别
+            data["target"] = "sqlWhite"             //设置目标--暂时没用
+            data["condition"] = "condition123"      //设置条件--暂时没用
+            data["managerhost"] = "192.168.60.99"   //设置管理库地址
+
+            //把data变成json字符串
+            jsonStr = json.dumps(data)
+
+            dcap_main = Dcap_main()
+            dcap_main.exec_all(jsonStr)
+
+        直接使用json字符串调用
+
+            jsonStr = '{"sqls": [{"sql": "SELECT * FROM pubs.dbo.authors", "par": {}}, {"sql": "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )", "par": {}}, {"sql": "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'", "par": {}}, {"sql": "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'", "par": {}}], "level": "info", "servers": [{"database": "pubs", "charset": "utf8", "type": "msSql", "password": "Ctf12345", "user": "sa", "host": "192.168.60.109", "port": "1433"}], "condition": "condition123", "clients": ["sqlcmd SQL server 2005", "sqlcmd SQL server 2008", "sqlcmd SQL server 2012", "sqlcmd SQL server 2014"], "managerhost": "192.168.60.99", "target": "sqlWhite"}'
+            dcap_main = Dcap_main()
+            dcap_main.exec_all(jsonStr)
+---------------------------------------------------------------------------分割线----------------------------------------------------------------------------------------
+Dcap_db类
+构造方法
+    def __init__(self):
+    该方法返回一个Dcap_db的实例
+成员变量
+    dbinfo              //生产库信息
+    sqls                //sql信息
+    methods             //使用驱动方法
+成员方法
+    def do_sqls(self):
+        根据dbinfo sqls methods运行所有sql
+
+    def do_sqls_pymssql(self):
+        使用pymssql，运行所有sql
+
+    def do_sqls_pyodbc(self, type):
+        根据type,使用不同类型的odbc方式，运行所有sql
+
+    def do_sqls_cx_oracle(self):
+        使用cx_oracle，运行所有sql
+
+-----------------------------------------分割线----------------------------------------------------------------------
+jdbc.py包
+方法
+    def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls):
+    jdbcType java的驱动类型
+    jdbcStr  数据库连接串
+    uname   用户名
+    pwd     密码
+    sqls    要执行的sqls这个是dcapmain的sqls
+----------------------------------------分割线-------------------------------------------------------------------
+dcap_solr类
+构造方法
+    def __init__(self):
+
+成员方法
+    def find_solr_cores(self):
+        查找solr的登录库以及访问库
+
+    def complete_sql(self, access_result):
+        根据访问结果，去SQL库中查出sql的信息
+
+    def find_sqls_in_solr(self):
+        在solr中查找信息
+----------------------------------------分割线-------------------------------------------------------------------
+实例方法都可以在各类的main方法中查看
+
+
+以下截取一段report信息
+带有符号的为状态信息
+runsql  代表执行sql
+find    代表查询sql
+结果在后面标注
+
+2017-05-12 13:36:44	info	root	---- exec all start ----
+2017-05-12 13:36:45	info	root	#### server 192.168.60.99 start ####
+2017-05-12 13:36:45	info	root	$$$$ run sql mode start $$$$
+2017-05-12 13:36:45	info	root	@@@@ use method startodbc2000 @@@@
+2017-05-12 13:36:46	info	root	runsql success SELECT * FROM pubs.dbo.authors
+2017-05-12 13:36:46	info	root	runsql success INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )
+2017-05-12 13:36:46	info	root	runsql success UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'
+2017-05-12 13:36:46	info	root	runsql success DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'
+2017-05-12 13:36:46	info	root	@@@@ use method endodbc2000 @@@@
+2017-05-12 13:36:46	info	root	$$$$ run sql mode end $$$$
+2017-05-12 13:36:46	info	root	$$$$ solr search mode start $$$$
+2017-05-12 13:36:46	info	root	**** thread sleep 180 s for data into solr start ****
+2017-05-12 13:39:46	info	root	**** thread sleep 180 s for data into solr end ****
+2017-05-12 13:39:46	info	root	find sql success SELECT * FROM PUBS.DBO.AUTHORS in solr core 1_1472366655332 id : 8E5D6287-A7E2-4DA2-8EC9-13507FB7B020
+2017-05-12 13:39:46	info	root	find sql success INSERT INTO PUBS.DBO.AUTHORS VALUES ( '100-10-1000', 'TENGFEI', 'CHEN', '083 879-9240', 'FENGTANLOAD', 'HANGZHOU', 'ZJ', '31000', 1 ) in solr core 1_1472366655332 id : 93F4D498-E67A-4089-AE6B-30752A6F76A5
+2017-05-12 13:39:46	info	root	find sql success UPDATE PUBS.DBO.AUTHORS SET CITY = 'SHANGHAI' WHERE CITY = 'HANGZHOU' AND AU_ID = '100-10-1000' in solr core 1_1472366655332 id : 9B04ABE0-8BB1-43AE-8C39-4614562A1EAC
+2017-05-12 13:39:46	info	root	find sql success DELETE FROM PUBS.DBO.AUTHORS WHERE AU_ID = '100-10-1000' in solr core 1_1472366655332 id : 79E1D3C9-1B5D-48BF-BC79-AC9DAD7D9D77
+2017-05-12 13:39:46	info	root	$$$$ solr search mode end $$$$
+2017-05-12 13:39:46	info	root	#### server 192.168.60.99 end ####
