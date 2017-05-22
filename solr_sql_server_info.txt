@@ -35,6 +35,7 @@ VS100COMNTOOLS = %VS140COMNTOOLS%
 或
 VS100COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\
 
+
 安装solr-py模块
 dcap_solr 采用 bordercore-solrpy包
 地址
