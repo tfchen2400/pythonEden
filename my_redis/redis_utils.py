@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # coding=utf-8
+import json
 import pickle
 import redis
 
 # 普通连接
+import simplejson
+
 r = redis.Redis(host="192.168.60.95", port=6379, db=0, password="tfchen5211")
 r.set("wein", "tiancai2")
 var_wenn = r.get("wein")
@@ -50,3 +53,12 @@ r.set("dict", pickle.dumps(d))
 
 redis_dict = r.get("dict")
 print(pickle.loads(redis_dict))
+
+#
+print("----------------------------------")
+r.lpush("list_chentf", 2)
+res = r.lrange("c9f2e894-3f66-11e7-af2f-00e04c10d44e", 0, -1)
+print(res)
+res2 = [x.decode('utf8') for x in res]
+
+print(res2)

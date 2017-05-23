@@ -46,43 +46,60 @@ class Dcap_main(object):
         # managerip
         managerhost = dataDict["managerhost"]
 
-        report = Report()
+        # reportType
+        # reportType = dataDict["reportType"]
 
-        report.level = level
+        self.uuid = dataDict.get("uuid")
+        if (self.uuid == None):
+            self.uuid = ""
+
+        self.report.level = level
 
         # 以server为单位
         for db_info in serversObjs:
             for client in clients:
                 timeStr = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime())
                 time.sleep(1)
-                self.report.info("#### " + "server " + db_info.host + " start ####")
+                self.report.info("#### " + "server " + db_info.host + " start ####", self.uuid)
                 # 运行sql
-                self.report.info("$$$$ " + "run sql mode start $$$$")
+                self.report.info("$$$$ " + "run sql mode start $$$$", self.uuid)
                 dcap_db = Dcap_db()
+                dcap_db.uuid = self.uuid
+
                 dcap_db.sqls = sqls
                 clients_now = []
                 clients_now.append(client)
                 dcap_db.methods = clients_now
                 dcap_db.dbinfo = db_info
                 dcap_db.do_sqls()
-                self.report.info("$$$$ " + "run sql mode end $$$$")
-                # self.report.info("$$$$ " + "solr search mode start $$$$")
+                self.report.info("$$$$ " + "run sql mode end $$$$", self.uuid)
+
+
+                # self.report.info("$$$$ " + "solr search mode start $$$$", self.uuid)
                 # dcap_solr = Dcap_solr()
-                #
+                # dcap_solr.uuid = self.uuid
+
                 # dcap_solr.time = timeStr
                 # # dcap_solr.time = "2017-05-11T17:33:19Z"
                 # dcap_solr.solr_url = "http://" + managerhost + ":8983/solr"
                 # dcap_solr.mysql_url = managerhost
                 # dcap_solr.sqls = sqls
-                # 休息一段时间等待数据进入solr
-                # secend = 60 * 3
-                # self.report.info("**** thread sleep %d s for data into solr start ****" % secend)
+                # #休息一段时间等待数据进入solr
+                # secend = 1 * 3
+                # self.report.info("**** thread sleep %d s for data into solr start ****" % secend, self.uuid)
                 # time.sleep(secend)
-                # self.report.info("**** thread sleep %d s for data into solr end ****" % secend)
+                # self.report.info("**** thread sleep %d s for data into solr end ****" % secend, self.uuid)
                 # dcap_solr.find_sqls_in_solr()
-                # self.report.info("$$$$ " + "solr search mode end $$$$")
-                # self.report.info("#### " + "server " + db_info.host + " end ####")
+                # self.report.info("$$$$ " + "solr search mode end $$$$", self.uuid)
+                # self.report.info("#### " + "server " + db_info.host + " end ####", self.uuid)
         self.report.info("---- " + "exec all end ----")
+        res = []
+        if (self.uuid != ""):
+            res = self.report.getAllResult(self.uuid)
+        result = {}
+        result["uuid"] = self.uuid
+        result["content"] = res
+        return result
 
 
 if __name__ == '__main__':
@@ -108,7 +125,7 @@ if __name__ == '__main__':
 
     # 生产库
     servers = []
-    #servers.append(db_info.__dict__)
+    # servers.append(db_info.__dict__)
     servers.append(db_info2.__dict__)
 
     clients = []
@@ -121,7 +138,7 @@ if __name__ == '__main__':
     clients.append("sqlcmd SQL server 2008")
     clients.append("sqlcmd SQL server 2012")
     clients.append("sqlcmd SQL server 2014")
-    #clients.append("sqljdbc4")
+    # clients.append("sqljdbc4")
     # clients.append("jtds13")
 
     sqls = []
@@ -162,7 +179,6 @@ if __name__ == '__main__':
     f = open('./jsonStr.txt', 'r')
     jsonStrFile = json.load(f)
     print(jsonStrFile)
-
 
     dcap_main = Dcap_main()
     dcap_main.exec_all(jsonStrFile)

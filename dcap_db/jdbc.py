@@ -7,7 +7,7 @@ import json
 from dcap_db.Report import Report
 
 
-def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls):
+def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
     report = Report()
     baseUrl = os.path.abspath('.')
     ext_classpath = ""
@@ -39,9 +39,9 @@ def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls):
             par_str = json.dumps(sql_info["par"])
             res = oracleMain.runSql(jdbcStr, uname, pwd, sql, par_str, jdbcType)
             if res:
-                report.info("runsql" + " success " + sql)
+                report.info("runsql" + " success " + sql, uuid)
             else:
-                report.info("runsql" + " error " + sql)
+                report.info("runsql" + " error " + sql, uuid)
         jpype.shutdownJVM()
     pass
 

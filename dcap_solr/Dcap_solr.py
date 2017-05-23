@@ -134,7 +134,7 @@ class Dcap_solr(object):
             for result in access_result:
                 if sql.upper() == result["sql_real"]:
                     flag = True
-                    bingo_str = "find sql success " + sql.upper() + " in solr core " + self.access_core[0] + " id : " + result["id"] #+ "other info : " + str(result)
+                    bingo_str = "find sql success " + sql.upper() + " in solr core " + self.access_core[0] + " id : " + result["id"]  # + "other info : " + str(result)
                     # print("bingo------bingo------bingo------bingo------bingo------bingo------bingo------")
                     break
 
@@ -152,12 +152,12 @@ class Dcap_solr(object):
                     print(result)
                     if sql.upper() == result["sql_real"]:
                         flag = True
-                        bingo_str = "find sql success " + sql.upper() + " in solr core " + self.access_core[0] + " id : " + result["id"] #+ "other info : " + str(result)
+                        bingo_str = "find sql success " + sql.upper() + " in solr core " + self.access_core[0] + " id : " + result["id"]  # + "other info : " + str(result)
                         # print("bingo------bingo------bingo------bingo------bingo------bingo------bingo------")
             if flag:
-                self.report.info(bingo_str)
+                self.report.info(bingo_str, self.uuid)
             else:
-                self.report.error("find sql error " + sql.upper() + " in solr core")
+                self.report.error("find sql error " + sql.upper() + " in solr core", self.uuid)
         # 向SQL库搜索
         # print("find_sqls_in_solr")
         pass

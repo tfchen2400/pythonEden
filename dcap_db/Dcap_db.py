@@ -37,8 +37,8 @@ class Dcap_db(object):
     def do_sqls(self):
         if (self.dbinfo.type == "msSql"):
             for m in self.methods:
-                self.logger.info("use method " + m + " #####################")
-                self.report.info("@@@@ " + "use method start" + m + " @@@@")
+                self.logger.info("use method " + m + " #####################", self.uuid)
+                self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)
                 if m == "pymssql":
                     self.do_sqls_pymssql()
                 elif m == "SQL server 2005":
@@ -61,7 +61,7 @@ class Dcap_db(object):
                     jdbcStr = "jdbc:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + ";databaseName=" + self.dbinfo.database + ";"
                     user = self.dbinfo.user
                     pwd = self.dbinfo.password
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
@@ -70,62 +70,62 @@ class Dcap_db(object):
                     jdbcStr = "jdbc:jtds:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + "/" + self.dbinfo.database
                     user = self.dbinfo.user
                     pwd = self.dbinfo.password
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
-                self.report.info("@@@@ " + "use method end" + m + " @@@@")
+                self.report.info("@@@@ " + "use method end" + m + " @@@@", self.uuid)
         elif (self.dbinfo.type == "oracle"):
             for m in self.methods:
-                self.logger.info("use method " + m + " #####################")
-                self.report.info("@@@@ " + "use method start" + m + " @@@@")
+                self.logger.info("use method " + m + " #####################", self.uuid)
+                self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)
                 jdbcStr = "jdbc:oracle:thin:@" + self.dbinfo.host + ":" + self.dbinfo.port + ":" + self.dbinfo.database
                 user = self.dbinfo.user
                 pwd = self.dbinfo.password
                 if m == "cx_oracle":
                     self.do_sqls_cx_oracle()
                 elif m == "ojdbc5":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc6":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc7":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc8":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "classes12":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc14":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "classes12":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
                     p.start()
                     p.join()
-                self.report.info("@@@@ " + "use method end" + m + " @@@@")
+                self.report.info("@@@@ " + "use method end" + m + " @@@@", self.uuid)
 
     def do_sqls_pymssql(self):
         # print("do_sqls_pymssql")
@@ -134,17 +134,17 @@ class Dcap_db(object):
         cursor = conn.cursor()
         if not cursor:
             raise (NameError, "数据库连接失败")
-            self.report.error("数据库连接失败")
+            self.report.error("数据库连接失败", self.uuid)
         for sql_info in self.sqls:
             sql = sql_info["sql"]
             # print("runsql", sql)
             try:
                 cursor.execute(sql)
                 # print("runsql", "success", sql)
-                self.report.info("runsql" + " success " + sql)
+                self.report.info("runsql" + " success " + sql, self.uuid)
             except Exception as e:
                 print('Error:', e)
-                self.report.error("runsql" + " error " + sql)
+                self.report.error("runsql" + " error " + sql, self.uuid)
         cursor.close()
         conn.close()
         pass
@@ -191,17 +191,17 @@ class Dcap_db(object):
         cursor = cnxn.cursor()
         if not cursor:
             raise (NameError, "数据库连接失败")
-            self.report.error("数据库连接失败")
+            self.report.error("数据库连接失败", self.uuid)
         for sql_info in self.sqls:
             # print("runsql", sql)
             sql = sql_info["sql"]
             try:
                 cursor.execute(sql)
                 # print("runsql", "success", sql)
-                self.report.info("runsql" + " success " + sql)
+                self.report.info("runsql" + " success " + sql, self.uuid)
             except Exception as e:
                 print('Error:', e)
-                self.report.error("runsql" + " error " + sql)
+                self.report.error("runsql" + " error " + sql, self.uuid)
         cursor.close()
         cnxn.close()
         pass
@@ -212,7 +212,7 @@ class Dcap_db(object):
         cursor = cx_Oracle.Cursor(conn)
         if not cursor:
             raise (NameError, "数据库连接失败")
-            self.report.error("数据库连接失败")
+            self.report.error("数据库连接失败", self.uuid)
         sql = 'select * from common_user'
         for sql_info in self.sqls:
             sql = sql_info["sql"]
@@ -220,10 +220,10 @@ class Dcap_db(object):
             try:
                 cursor.execute(sql, par)
                 conn.commit()
-                self.report.info("runsql" + " success " + sql + " ----------par: " + str(par))
+                self.report.info("runsql" + " success " + sql + " ----------par: " + str(par), self.uuid)
             except Exception as e:
                 print('Error:', e)
-                self.report.error("runsql" + " error " + sql + " ----------par: " + str(par))
+                self.report.error("runsql" + " error " + sql + " ----------par: " + str(par), self.uuid)
         cursor.close()
         conn.close()
         pass
@@ -285,7 +285,6 @@ if __name__ == '__main__':
     db_info.password = "scott"
     db_info.host = "192.168.200.179"
     db_info.port = "1521"
-
 
     dcap_db.dbinfo = db_info
 

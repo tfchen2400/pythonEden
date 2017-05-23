@@ -123,6 +123,7 @@ def send_email():
 
     sender = 'tfchen5211@foxmail.com'
     receivers = ['1102414893@qq.com']
+    receivers = ['zuoy@mchz.com.cn']
 
     timestr = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 
