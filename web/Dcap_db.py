@@ -79,7 +79,7 @@ class Dcap_db(object):
                 self.report.info("@@@@ " + "use method end" + m + " @@@@", self.uuid)
         elif (self.dbinfo.type == "oracle"):
             for m in self.methods:
-                self.logger.info("use method " + m + " #####################", self.uuid)
+                self.logger.info("use method " + m + " #####################"+self.uuid)
                 self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)
                 jdbcStr = "jdbc:oracle:thin:@" + self.dbinfo.host + ":" + self.dbinfo.port + ":" + self.dbinfo.database
                 user = self.dbinfo.user
@@ -335,10 +335,10 @@ if __name__ == '__main__':
     dcap_db.sqls = sqls
 
     methods = []
-    methods.append("cx_oracle")
+    # methods.append("cx_oracle")
     # methods.append("ojdbc14")
     # methods.append("classes12")
-    # methods.append("ojdbc5")
+    methods.append("ojdbc5")
     # methods.append("ojdbc6")
     # methods.append("ojdbc7")
     # methods.append("ojdbc8")

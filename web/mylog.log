@@ -1,0 +1,4 @@
+2017-05-25 19:44:00,669 - Dcap_db - INFO - use method cx_oracle #####################
+2017-05-25 19:44:08,994 - Dcap_db - INFO - use method cx_oracle #####################
+2017-05-25 19:44:26,006 - Dcap_db - INFO - use method ojdbc5 #####################
+2017-05-25 19:47:13,748 - Dcap_db - INFO - use method ojdbc5 #####################

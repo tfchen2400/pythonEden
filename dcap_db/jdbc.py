@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # coding=utf-8
 import os
+import platform
+
 import jpype
 import json
 
@@ -9,7 +11,10 @@ from dcap_db.Report import Report
 
 def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
     report = Report()
-    baseUrl = os.path.abspath('.')
+    # baseUrl = os.path.abspath('.')
+    baseUrl = findPath("tag")
+    baseUrl = os.path.split(baseUrl)[0]
+    baseUrl = os.path.join(baseUrl, "dcap_db")
     ext_classpath = ""
     if (jdbcType == "ojdbc14"):
         ext_classpath = os.path.join(baseUrl, "oraclelink", "OracleMain_ojdbc14.jar")
@@ -46,6 +51,27 @@ def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
     pass
 
 
+def getSeparator():
+    if 'Windows' in platform.system():
+        separator = '\\'
+    else:
+        separator = '/'
+    return separator
+
+
+def findPath(file):
+    o_path = os.getcwd()
+    separator = getSeparator()
+    str = o_path
+    str = str.split(separator)
+    while len(str) > 0:
+        spath = separator.join(str) + separator + file
+        leng = len(str)
+        if os.path.exists(spath):
+            return spath
+        str.remove(str[leng - 1])
+
+
 if __name__ == '__main__':
     sqls = []
     sql_info = {}
@@ -69,7 +95,7 @@ if __name__ == '__main__':
     sqls.append(sql_info)
 
     sqls.append("UPDATE authors SET CONTRACT = 0 WHERE AU_LNAME = 'White'")
-    do_sql_java("sqljdbc4", "jdbc:sqlserver://192.168.60.109:1433;databaseName=pubs;", "sa", "Ctf12345", sqls)
+    # do_sql_java("sqljdbc4", "jdbc:sqlserver://192.168.60.109:1433;databaseName=pubs;", "sa", "Ctf12345", sqls)
 
 
     # sqls = []
@@ -96,4 +122,6 @@ if __name__ == '__main__':
     # sql_info["par"] = par
     # sqls.append(sql_info)
     #
-    # do_sql_java("ojdbc6", "jdbc:oracle:thin:@192.168.60.95:1521:wangzw", "scott", "scott", sqls)
+    do_sql_java("ojdbc6", "jdbc:oracle:thin:@192.168.60.95:1521:wangzw", "scott", "scott", sqls, "")
+
+    print(findPath('tag'))

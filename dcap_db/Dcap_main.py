@@ -4,9 +4,11 @@
     对外的接口类
 """
 import time
+import uuid
 
 from dcap_db.Db_info import Db_info
 from dcap_db.Dcap_db import Dcap_db
+from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
 from solrpy import core
 
@@ -22,6 +24,7 @@ import json
 class Dcap_main(object):
     def __init__(self):
         self.report = Report()
+        self.redis = Dcap_redis().getRedis()
         pass
 
     def exec_all(self, data):
@@ -50,8 +53,13 @@ class Dcap_main(object):
         # reportType = dataDict["reportType"]
 
         self.uuid = dataDict.get("uuid")
+        # 如果没有uuid 就生成一个uuid
         if (self.uuid == None):
-            self.uuid = ""
+            self.uuid = str(uuid.uuid1())
+
+        # 生成一个返回的hashmap
+        self.redis.hset(self.uuid, 'uuid', self.uuid)
+        self.redis.hset(self.uuid, 'reqInfo', str(data))
 
         self.report.level = level
 
@@ -135,30 +143,35 @@ if __name__ == '__main__':
     # clients.append("SQL server 2012")
     # clients.append("SQL server 2014")
     clients.append("sqlcmd SQL server 2005")
-    clients.append("sqlcmd SQL server 2008")
-    clients.append("sqlcmd SQL server 2012")
-    clients.append("sqlcmd SQL server 2014")
+    # clients.append("sqlcmd SQL server 2008")
+    # clients.append("sqlcmd SQL server 2012")
+    # clients.append("sqlcmd SQL server 2014")
     # clients.append("sqljdbc4")
     # clients.append("jtds13")
 
     sqls = []
-    sql_info = {}
-    sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"
-    sql_info["par"] = {}
-    sqls.append(sql_info)
+    # sql_info = {}
+    # sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
 
     sql_info = {}
-    sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
-    sql_info["par"] = {}
-    sqls.append(sql_info)
-
-    sql_info = {}
-    sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
-    sql_info["par"] = {}
-    sqls.append(sql_info)
-
-    sql_info = {}
-    sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    sql_info["sql"] = "create login dba with password='dba',default_database=sales"
     sql_info["par"] = {}
     sqls.append(sql_info)
 

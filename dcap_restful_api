@@ -1,0 +1,30 @@
+dcap_restful_api
+在web模块中运行app.py会启动一个web服务
+此web服务监听在0.0.0.0:5000上
+
+鉴权head上使用 Basic Auth
+用户ok
+密码python
+
+
+描述:接口列表
+url
+    http://127.0.0.1:5000/todo/api/v1.0/maps
+method
+    get
+参数
+    无
+返回
+    json
+    所有接口列表
+
+
+描述:主方法
+url
+    http://127.0.0.1:5000/todo/api/v1.0/execAll
+method
+    get
+参数
+    info jsonObject 包含 所有的相关信息
+    示例
+    http://127.0.0.1:5001/todo/api/v1.0/execAll?info={"managerhost": "192.168.60.99", "target": "sqlWhite", "servers": [{"charset": "utf8", "database": "pubs", "host": "192.168.60.109", "password": "Ctf12345", "type": "msSql", "port": "1433", "user": "sa"}], "clients": ["sqlcmd SQL server 2005", "sqlcmd SQL server 2008", "sqlcmd SQL server 2012", "sqlcmd SQL server 2014"], "sqls": [{"par": {}, "sql": "SELECT * FROM pubs.dbo.authors"}, {"par": {}, "sql": "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"}, {"par": {}, "sql": "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"}, {"par": {}, "sql": "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"}], "level": "info", "condition": "condition123"}
