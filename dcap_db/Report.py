@@ -44,7 +44,7 @@ class Report(object):
         if self.pool == None:
             str1 = ""
 
-        if (str1 != ""):
+        if (str1 == "hahahahahahahahahaha"):
             r = redis.Redis(connection_pool=self.pool)
             str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '\t' + self.level + '\t' + str2
             print(str)

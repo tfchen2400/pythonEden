@@ -6,6 +6,9 @@ import platform
 import jpype
 import json
 
+import simplejson
+
+from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
 
 
@@ -34,19 +37,34 @@ def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
     # ext_classpath = "E:\Lib\OracleMain_ojdbc14.jar"
     # ext_classpath = "E:\Lib\OraceJdbc.jar"
     jvmArg = '-Djava.class.path=' + ext_classpath
+    redis = Dcap_redis().getRedis()
     if not jpype.isJVMStarted():
         jpype.startJVM(jvmPath, jvmArg)
         system = jpype.java.lang.System
         oracle = jpype.JClass('snippet.OracleMain')
         oracleMain = oracle()
         for sql_info in sqls:
+            sql_info_json = simplejson.loads(redis.hget(uuid + "sql", sql_info["uuid"]))
+
+            clientsJa = sql_info_json.get("clients")
+            if clientsJa == None:
+                clientsJa = []
+
+            pymssql_jo = {}
+            pymssql_jo["client"] = jdbcType
+
             sql = sql_info["sql"]
             par_str = json.dumps(sql_info["par"])
             res = oracleMain.runSql(jdbcStr, uname, pwd, sql, par_str, jdbcType)
             if res:
                 report.info("runsql" + " success " + sql, uuid)
+                pymssql_jo["runsql"] = "success"
             else:
                 report.info("runsql" + " error " + sql, uuid)
+                pymssql_jo["runsql"] = "error"
+            clientsJa.append(pymssql_jo)
+            sql_info_json["clients"] = clientsJa
+            redis.hset(uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
         jpype.shutdownJVM()
     pass
 

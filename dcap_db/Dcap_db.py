@@ -9,12 +9,14 @@ import pymssql
 import pyodbc
 import logging
 import logging.config
+import simplejson
 import cx_Oracle
 import jpype
 from multiprocessing import Process
 
 from dcap_db import jdbc
 from dcap_db.Db_info import Db_info
+from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
 
 __author__ = '陈腾飞(水言Dade)'
@@ -32,6 +34,7 @@ class Dcap_db(object):
     def __init__(self):
         self.logger = logging.getLogger('Dcap_db')
         self.report = Report()
+        self.redis = Dcap_redis().getRedis()
         self.uuid = ""
         pass
 
@@ -77,9 +80,9 @@ class Dcap_db(object):
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 self.report.info("@@@@ " + "use method end" + m + " @@@@", self.uuid)
-        elif (self.dbinfo.type == "oracle"):
+        elif (self.dbinfo.type.upper() == "ORACLE"):
             for m in self.methods:
-                self.logger.info("use method " + m + " #####################", self.uuid)
+                self.logger.info("use method " + m + " #####################" + self.uuid)
                 self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)
                 jdbcStr = "jdbc:oracle:thin:@" + self.dbinfo.host + ":" + self.dbinfo.port + ":" + self.dbinfo.database
                 user = self.dbinfo.user
@@ -137,15 +140,32 @@ class Dcap_db(object):
             raise (NameError, "数据库连接失败")
             self.report.error("数据库连接失败", self.uuid)
         for sql_info in self.sqls:
+            # 获取sqlinfo的json
+            # 变成dict
+            sql_info_json = simplejson.loads(self.redis.hget(self.uuid + "sql", sql_info["uuid"]))
+
+            clientsJa = sql_info_json.get("clients")
+            if clientsJa == None:
+                clientsJa = []
+
+            pymssql_jo = {}
+            pymssql_jo["client"] = "pymssql"
+
             sql = sql_info["sql"]
             # print("runsql", sql)
             try:
                 cursor.execute(sql)
                 # print("runsql", "success", sql)
+                pymssql_jo["runsql"] = "success"
                 self.report.info("runsql" + " success " + sql, self.uuid)
             except Exception as e:
                 print('Error:', e)
                 self.report.error("runsql" + " error " + sql, self.uuid)
+                pymssql_jo["runsql"] = "error"
+                pymssql_jo["errorInfo"] = str(e)
+            clientsJa.append(pymssql_jo)
+            sql_info_json["clients"] = clientsJa
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
         cursor.close()
         conn.close()
         pass
@@ -195,14 +215,28 @@ class Dcap_db(object):
             self.report.error("数据库连接失败", self.uuid)
         for sql_info in self.sqls:
             # print("runsql", sql)
+            sql_info_json = simplejson.loads(self.redis.hget(self.uuid + "sql", sql_info["uuid"]))
+            clientsJa = sql_info_json.get("clients")
+            if clientsJa == None:
+                clientsJa = []
+
+            pymssql_jo = {}
+            pymssql_jo["client"] = type
+
             sql = sql_info["sql"]
             try:
                 cursor.execute(sql)
                 # print("runsql", "success", sql)
                 self.report.info("runsql" + " success " + sql, self.uuid)
+                pymssql_jo["runsql"] = "success"
             except Exception as e:
                 print('Error:', e)
                 self.report.error("runsql" + " error " + sql, self.uuid)
+                pymssql_jo["runsql"] = "error"
+                pymssql_jo["errorInfo"] = str(e)
+            clientsJa.append(pymssql_jo)
+            sql_info_json["clients"] = clientsJa
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
         cursor.close()
         cnxn.close()
         pass
@@ -216,15 +250,29 @@ class Dcap_db(object):
             self.report.error("数据库连接失败", self.uuid)
         sql = 'select * from common_user'
         for sql_info in self.sqls:
+            sql_info_json = simplejson.loads(self.redis.hget(self.uuid + "sql", sql_info["uuid"]))
+            clientsJa = sql_info_json.get("clients")
+            if clientsJa == None:
+                clientsJa = []
+
+            pymssql_jo = {}
+            pymssql_jo["client"] = type
+
             sql = sql_info["sql"]
             par = sql_info["par"]
             try:
                 cursor.execute(sql, par)
                 conn.commit()
                 self.report.info("runsql" + " success " + sql + " ----------par: " + str(par), self.uuid)
+                pymssql_jo["runsql"] = "success"
             except Exception as e:
                 print('Error:', e)
                 self.report.error("runsql" + " error " + sql + " ----------par: " + str(par), self.uuid)
+                pymssql_jo["runsql"] = "error"
+                pymssql_jo["errorInfo"] = str(e)
+            clientsJa.append(pymssql_jo)
+            sql_info_json["clients"] = clientsJa
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
         cursor.close()
         conn.close()
         pass

@@ -6,6 +6,8 @@
 import time
 import uuid
 
+import simplejson
+
 from dcap_db.Db_info import Db_info
 from dcap_db.Dcap_db import Dcap_db
 from dcap_db.Dcap_redis import Dcap_redis
@@ -49,9 +51,6 @@ class Dcap_main(object):
         # managerip
         managerhost = dataDict["managerhost"]
 
-        # reportType
-        # reportType = dataDict["reportType"]
-
         self.uuid = dataDict.get("uuid")
         # 如果没有uuid 就生成一个uuid
         if (self.uuid == None):
@@ -61,6 +60,10 @@ class Dcap_main(object):
         self.redis.hset(self.uuid, 'uuid', self.uuid)
         self.redis.hset(self.uuid, 'reqInfo', str(data))
 
+        # 每个sql生成一个uuid
+        sqls = map(self.generate_sql_uuid, sqls)
+        sqls = list(sqls)
+        # 每一句
         self.report.level = level
 
         # 以server为单位
@@ -101,13 +104,22 @@ class Dcap_main(object):
                 # self.report.info("$$$$ " + "solr search mode end $$$$", self.uuid)
                 # self.report.info("#### " + "server " + db_info.host + " end ####", self.uuid)
         self.report.info("---- " + "exec all end ----")
-        res = []
-        if (self.uuid != ""):
-            res = self.report.getAllResult(self.uuid)
-        result = {}
-        result["uuid"] = self.uuid
-        result["content"] = res
-        return result
+
+        # 获取uuid
+        result_true = self.redis.hgetall(self.uuid)
+        result = self.redis.hgetall(self.uuid + "sql")
+        resultTemp = []
+        for k, v in result.items():
+            tv = simplejson.loads(v)
+            # print(simplejson.dumps(tv))
+            resultTemp.append(tv)
+            result_true["result"] = resultTemp
+        return simplejson.dumps(result_true)
+
+    def generate_sql_uuid(self, x):
+        x["uuid"] = str(uuid.uuid1())
+        self.redis.hset(self.uuid + "sql", x["uuid"], json.dumps(x))
+        return x
 
 
 if __name__ == '__main__':
@@ -142,11 +154,11 @@ if __name__ == '__main__':
     # clients.append("SQL server 2008")
     # clients.append("SQL server 2012")
     # clients.append("SQL server 2014")
-    clients.append("sqlcmd SQL server 2005")
+    # clients.append("sqlcmd SQL server 2005")
     # clients.append("sqlcmd SQL server 2008")
     # clients.append("sqlcmd SQL server 2012")
     # clients.append("sqlcmd SQL server 2014")
-    # clients.append("sqljdbc4")
+    clients.append("sqljdbc4")
     # clients.append("jtds13")
 
     sqls = []
@@ -165,10 +177,10 @@ if __name__ == '__main__':
     # sql_info["par"] = {}
     # sqls.append(sql_info)
     #
-    # sql_info = {}
-    # sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
-    # sql_info["par"] = {}
-    # sqls.append(sql_info)
+    sql_info = {}
+    sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
 
     sql_info = {}
     sql_info["sql"] = "create login dba with password='dba',default_database=sales"
@@ -194,6 +206,6 @@ if __name__ == '__main__':
     print(jsonStrFile)
 
     dcap_main = Dcap_main()
-    dcap_main.exec_all(jsonStrFile)
-
+    res = dcap_main.exec_all(jsonStrFile)
+    print(res)
     # print(data)
