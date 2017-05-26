@@ -243,7 +243,12 @@ class Dcap_db(object):
 
     def do_sqls_cx_oracle(self):
         dsn = cx_Oracle.makedsn(self.dbinfo.host, self.dbinfo.port, self.dbinfo.database)
-        conn = cx_Oracle.connect(self.dbinfo.user, self.dbinfo.password, dsn)
+        conn = ""
+        if "AS SYSDBA" in self.dbinfo.user.upper():
+            user = self.dbinfo.user.upper().split()[0]
+            conn = cx_Oracle.connect(user, self.dbinfo.password, dsn, mode=cx_Oracle.SYSDBA)
+        else:
+            conn = cx_Oracle.connect(self.dbinfo.user, self.dbinfo.password, dsn)
         cursor = cx_Oracle.Cursor(conn)
         if not cursor:
             raise (NameError, "数据库连接失败")
@@ -256,7 +261,7 @@ class Dcap_db(object):
                 clientsJa = []
 
             pymssql_jo = {}
-            pymssql_jo["client"] = type
+            pymssql_jo["client"] = "cx_oracle"
 
             sql = sql_info["sql"]
             par = sql_info["par"]
@@ -272,7 +277,7 @@ class Dcap_db(object):
                 pymssql_jo["errorInfo"] = str(e)
             clientsJa.append(pymssql_jo)
             sql_info_json["clients"] = clientsJa
-            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(dict(sql_info_json)))
         cursor.close()
         conn.close()
         pass
@@ -338,18 +343,18 @@ if __name__ == '__main__':
     dcap_db.dbinfo = db_info
 
     sqls = []
-    sql_info = {}
-    sql_info["sql"] = "select * from dept"
-    sql_info["par"] = {}
-    sqls.append(sql_info)
-
-    sql_info = {}
-    sql_info["sql"] = "select * from dept where dname = :dname"
-    par = {}
-    par["dname"] = "ACCOUNTING"
-    sql_info["par"] = par
-
-    sqls.append(sql_info)
+    # sql_info = {}
+    # sql_info["sql"] = "select * from dept"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "select * from dept where dname = :dname"
+    # par = {}
+    # par["dname"] = "ACCOUNTING"
+    # sql_info["par"] = par
+    #
+    # sqls.append(sql_info)
 
     # sqls.append("select * from dept where dname = 'ACCOUNTING'")
     # sqls.append("INSERT INTO dept VALUES (11, 'chentf', 'hz')")
@@ -357,30 +362,32 @@ if __name__ == '__main__':
     # sqls.append("DELETE dept WHERE DEPTNO = 11")
 
 
-    sql_info = {}
-    sql_info["sql"] = "INSERT INTO dept VALUES (:id, :dname, :city)"
-    par = {}
-    par["id"] = 11
-    par["dname"] = "chentf"
-    par["city"] = "hz"
-    sql_info["par"] = par
-    sqls.append(sql_info)
-
-    sql_info = {}
-    sql_info["sql"] = "UPDATE dept SET dname = :dname WHERE DEPTNO = :id"
-    par = {}
-    par["id"] = 11
-    par["dname"] = "CHENTF_UPDATE"
-    sql_info["par"] = par
-    sqls.append(sql_info)
+    # sql_info = {}
+    # sql_info["sql"] = "INSERT INTO dept VALUES (:id, :dname, :city)"
+    # par = {}
+    # par["id"] = 11
+    # par["dname"] = "chentf"
+    # par["city"] = "hz"
+    # sql_info["par"] = par
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "UPDATE dept SET dname = :dname WHERE DEPTNO = :id"
+    # par = {}
+    # par["id"] = 11
+    # par["dname"] = "CHENTF_UPDATE"
+    # sql_info["par"] = par
+    # sqls.append(sql_info)
 
     sql_info = {}
     sql_info["sql"] = "DELETE dept WHERE DEPTNO = 11"
     par = {}
     sql_info["par"] = par
+    sql_info["uuid"] = "123"
     sqls.append(sql_info)
 
     dcap_db.sqls = sqls
+    dcap_db.uuid = "chentf"
 
     methods = []
     methods.append("cx_oracle")

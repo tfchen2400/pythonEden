@@ -15,7 +15,7 @@ def run_proc(name):
         system.out.println('hello world!')
         oracle = jpype.JClass('snippet.OracleMain')
         oracleMain = oracle()
-        res = oracleMain.runSql("jdbc:oracle:thin:@192.168.60.95:1521:wangzw", "scott", "scott", "SELECT * FROM DEPT")
+        res = oracleMain.runSql("jdbc:oracle:thin:@192.168.200.180:1578:orcl", "sys as sysdba", "oracle", "SELECT * FROM SCOTT.DEPT")
         print(res)
         shutdownJVM()
         #jpype.startJVM(jvmPath, jvmArg)
