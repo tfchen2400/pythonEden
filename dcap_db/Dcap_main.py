@@ -126,27 +126,26 @@ if __name__ == '__main__':
     data = {}
     # db info
     db_info = Db_info()
-    db_info.type = "msSql"
-    db_info.charset = "utf8"
-    db_info.database = "pubs"
-    db_info.user = "sa"
-    db_info.password = "Ctf12345"
-    db_info.host = "192.168.60.99"
-    db_info.port = "5211"
+    db_info.type = "oracle"
+    db_info.database = "orcl"
+    db_info.user = "scott"
+    db_info.password = "scott"
+    db_info.host = "192.168.200.179"
+    db_info.port = "1521"
 
-    db_info2 = Db_info()
-    db_info2.type = "msSql"
-    db_info2.charset = "utf8"
-    db_info2.database = "pubs"
-    db_info2.user = "sa"
-    db_info2.password = "Ctf12345"
-    db_info2.host = "192.168.60.109"
-    db_info2.port = "1433"
+    # db_info2 = Db_info()
+    # db_info2.type = "msSql"
+    # db_info2.charset = "utf8"
+    # db_info2.database = "pubs"
+    # db_info2.user = "sa"
+    # db_info2.password = "Ctf12345"
+    # db_info2.host = "192.168.60.109"
+    # db_info2.port = "1433"
 
     # 生产库
     servers = []
-    # servers.append(db_info.__dict__)
-    servers.append(db_info2.__dict__)
+    servers.append(db_info.__dict__)
+    # servers.append(db_info2.__dict__)
 
     clients = []
     # clients.append("pymssql")
@@ -158,8 +157,10 @@ if __name__ == '__main__':
     # clients.append("sqlcmd SQL server 2008")
     # clients.append("sqlcmd SQL server 2012")
     # clients.append("sqlcmd SQL server 2014")
-    clients.append("sqljdbc4")
+    # clients.append("sqljdbc4")
     # clients.append("jtds13")
+
+    clients.append("cx_oracle")
 
     sqls = []
     # sql_info = {}
@@ -177,15 +178,23 @@ if __name__ == '__main__':
     # sql_info["par"] = {}
     # sqls.append(sql_info)
     #
-    sql_info = {}
-    sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
-    sql_info["par"] = {}
-    sqls.append(sql_info)
+    # sql_info = {}
+    # sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "create login dba with password='dba',default_database=sales"
+    # sql_info["par"] = {}
+    # sqls.append(sql_info)
 
     sql_info = {}
-    sql_info["sql"] = "create login dba with password='dba',default_database=sales"
-    sql_info["par"] = {}
+    sql_info["sql"] = "DELETE dept WHERE DEPTNO = 11"
+    par = {}
+    sql_info["par"] = par
+    sql_info["uuid"] = "123"
     sqls.append(sql_info)
+
 
     data["servers"] = servers
     data["clients"] = clients
