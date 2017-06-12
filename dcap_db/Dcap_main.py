@@ -71,7 +71,10 @@ class Dcap_main(object):
         for db_info in serversObjs:
             for client in clients:
                 timeStr = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime())
-                time.sleep(1)
+                # timeStr = "2017-06-12T16:20:12Z"
+                if True == db_info.solr:
+                    time.sleep(10)
+                    pass
                 self.report.info("#### " + "server " + db_info.host + " start ####", self.uuid)
                 # 运行sql
                 self.report.info("$$$$ " + "run sql mode start $$$$", self.uuid)
@@ -86,24 +89,24 @@ class Dcap_main(object):
                 dcap_db.do_sqls()
                 self.report.info("$$$$ " + "run sql mode end $$$$", self.uuid)
 
-
-                # self.report.info("$$$$ " + "solr search mode start $$$$", self.uuid)
-                # dcap_solr = Dcap_solr()
-                # dcap_solr.uuid = self.uuid
-
-                # dcap_solr.time = timeStr
-                # # dcap_solr.time = "2017-05-11T17:33:19Z"
-                # dcap_solr.solr_url = "http://" + managerhost + ":8983/solr"
-                # dcap_solr.mysql_url = managerhost
-                # dcap_solr.sqls = sqls
-                # #休息一段时间等待数据进入solr
-                # secend = 1 * 3
-                # self.report.info("**** thread sleep %d s for data into solr start ****" % secend, self.uuid)
-                # time.sleep(secend)
-                # self.report.info("**** thread sleep %d s for data into solr end ****" % secend, self.uuid)
-                # dcap_solr.find_sqls_in_solr()
-                # self.report.info("$$$$ " + "solr search mode end $$$$", self.uuid)
-                # self.report.info("#### " + "server " + db_info.host + " end ####", self.uuid)
+                if True == db_info.solr:
+                    self.report.info("$$$$ " + "solr search mode start $$$$", self.uuid)
+                    dcap_solr = Dcap_solr()
+                    dcap_solr.uuid = self.uuid
+                    dcap_solr.client = client
+                    dcap_solr.time = timeStr
+                    # dcap_solr.time = "2017-05-11T17:33:19Z"
+                    dcap_solr.solr_url = "http://" + managerhost + ":8983/solr"
+                    dcap_solr.mysql_url = managerhost
+                    dcap_solr.sqls = sqls
+                    # 休息一段时间等待数据进入solr
+                    secend = 1 * 20
+                    self.report.info("**** thread sleep %d s for data into solr start ****" % secend, self.uuid)
+                    time.sleep(secend)
+                    self.report.info("**** thread sleep %d s for data into solr end ****" % secend, self.uuid)
+                    dcap_solr.find_sqls_in_solr()
+                    self.report.info("$$$$ " + "solr search mode end $$$$", self.uuid)
+                    self.report.info("#### " + "server " + db_info.host + " end ####", self.uuid)
         self.report.info("---- " + "exec all end ----")
 
         # 获取uuid
@@ -125,31 +128,34 @@ class Dcap_main(object):
 
 if __name__ == '__main__':
     data = {}
-    db_info = Db_info()
-    db_info.type = "oracle"
-    db_info.database = "ORCLCDB"
-    db_info.user = "sys as sysdba"
-    db_info.password = "hzmc321#"
-    db_info.host = "192.168.60.95"
-    db_info.port = "1521"
-    db_info.name = "chentfdb"
-    # db_info2 = Db_info()
-    # db_info2.type = "msSql"
-    # db_info2.charset = "utf8"
-    # db_info2.database = "pubs"
-    # db_info2.user = "sa"
-    # db_info2.password = "Ctf12345"
-    # db_info2.host = "192.168.60.109"
-    # db_info2.port = "1433"
-    # db_info2.name = "chentfdb"
+    # db_info = Db_info()
+    # db_info.type = "oracle"
+    # db_info.database = "ORCLCDB"
+    # db_info.user = "sys as sysdba"
+    # db_info.password = "hzmc321#"
+    # db_info.host = "192.168.60.95"
+    # db_info.port = "1521"
+    # db_info.name = "chentfdb"
+    # db_info.solr = True
+
+    db_info2 = Db_info()
+    db_info2.type = "msSql"
+    db_info2.charset = "utf8"
+    db_info2.database = "pubs"
+    db_info2.user = "sa"
+    db_info2.password = "Ctf12345"
+    db_info2.host = "192.168.60.99"
+    db_info2.port = "5211"
+    db_info2.name = "chentfdb"
+    db_info2.solr = True
 
     # 生产库
     servers = []
-    servers.append(db_info.__dict__)
-    # servers.append(db_info2.__dict__)
+    # servers.append(db_info.__dict__)
+    servers.append(db_info2.__dict__)
 
     clients = []
-    # clients.append("pymssql")
+    clients.append("pymssql")
     # clients.append("SQL server 2005")
     # clients.append("SQL server 2008")
     # clients.append("SQL server 2012")
@@ -162,49 +168,49 @@ if __name__ == '__main__':
     # clients.append("jtds13")
 
     # clients.append("cx_oracle")
-    clients.append("linux_X86_64_OCI_12")
-    clients.append("linux_X86_64_OCI_11")
-    clients.append("linux_X86_64_OCI_10")
+    # clients.append("linux_X86_64_OCI_12")
+    # clients.append("linux_X86_64_OCI_11")
+    # clients.append("linux_X86_64_OCI_10")
 
     sqls = []
-    # sql_info = {}
-    # sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"
-    # sql_info["par"] = {}
-    # sqls.append(sql_info)
-    #
-    # sql_info = {}
-    # sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
-    # sql_info["par"] = {}
-    # sqls.append(sql_info)
-    #
-    # sql_info = {}
-    # sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
-    # sql_info["par"] = {}
-    # sqls.append(sql_info)
-    #
-    # sql_info = {}
-    # sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
-    # sql_info["par"] = {}
-    # sqls.append(sql_info)
-    #
+    sql_info = {}
+    sql_info["sql"] = "SELECT * FROM pubs.dbo.authors"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "INSERT INTO pubs.dbo.authors VALUES ( '100-10-1000', 'tengfei', 'chen', '083 879-9240', 'fengtanload', 'hangzhou', 'ZJ', '31000', 1 )"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "UPDATE pubs.dbo.authors SET city = 'shanghai' WHERE city = 'hangzhou' AND au_id = '100-10-1000'"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
+    sql_info = {}
+    sql_info["sql"] = "DELETE FROM pubs.dbo.authors WHERE au_id = '100-10-1000'"
+    sql_info["par"] = {}
+    sqls.append(sql_info)
+
     # sql_info = {}
     # sql_info["sql"] = "create login dba with password='dba',default_database=sales"
     # sql_info["par"] = {}
     # sqls.append(sql_info)
 
-    sql_info = {}
-    sql_info["sql"] = "DELETE dept WHERE DEPTNO = 11"
-    par = {}
-    sql_info["par"] = par
-    sql_info["uuid"] = "123"
-    sqls.append(sql_info)
-
-    sql_info = {}
-    sql_info["sql"] = "select 1 from dual"
-    par = {}
-    sql_info["par"] = par
-    sql_info["uuid"] = "123"
-    sqls.append(sql_info)
+    # sql_info = {}
+    # sql_info["sql"] = "DELETE dept WHERE DEPTNO = 11"
+    # par = {}
+    # sql_info["par"] = par
+    # sql_info["uuid"] = "123"
+    # sqls.append(sql_info)
+    #
+    # sql_info = {}
+    # sql_info["sql"] = "select 1 from dual"
+    # par = {}
+    # sql_info["par"] = par
+    # sql_info["uuid"] = "123"
+    # sqls.append(sql_info)
 
     data["servers"] = servers
     data["clients"] = clients

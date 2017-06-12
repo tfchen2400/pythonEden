@@ -39,7 +39,7 @@ class Dcap_db(object):
         pass
 
     def do_sqls(self):
-        if (self.dbinfo.type == "MSSQL"):
+        if (self.dbinfo.type.upper() == "MSSQL"):
             for m in self.methods:
                 self.logger.info("use method " + m + " #####################", self.uuid)
                 self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)

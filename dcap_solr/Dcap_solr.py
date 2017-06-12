@@ -5,8 +5,11 @@
 """
 import pymysql
 import json
+
+import simplejson
 from solrpy import core
 
+from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
 
 __author__ = '陈腾飞(水言Dade)'
@@ -35,6 +38,7 @@ class Dcap_solr(object):
 
     def __init__(self):
         self.report = Report()
+        self.redis = Dcap_redis().getRedis()
         pass
 
     # 查找 登录和访问的core名
@@ -96,7 +100,16 @@ class Dcap_solr(object):
     def find_sqls_in_solr(self):
         self.find_solr_cores()
         # 向访问库搜索 JOIN SQL库搜索
-        for sql in self.sqls:
+        for sql_info in self.sqls:
+            sql_info_json = simplejson.loads(self.redis.hget(self.uuid + "sql", sql_info["uuid"]))
+
+            clientsJa = sql_info_json.get("clients")
+            pymssql_jo = {}
+            for x in clientsJa:
+                if x["client"] == self.client:
+                    pymssql_jo = x
+
+            sql = sql_info["sql"]
             flag = False
             bingo_str = ""
             sql = sql.upper()
@@ -158,10 +171,23 @@ class Dcap_solr(object):
                 self.report.info(bingo_str, self.uuid)
             else:
                 self.report.error("find sql error " + sql.upper() + " in solr core", self.uuid)
-        # 向SQL库搜索
-        # print("find_sqls_in_solr")
+            # 向SQL库搜索
+            # print("find_sqls_in_solr")
+            result = {"flag": flag, "bingo_str": bingo_str}
+
+            pymssql_jo["search"] = returnStrBoolean(flag)
+            pymssql_jo["searchInfo"] = bingo_str
+            sql_info_json["clients"] = clientsJa
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
         pass
 
+
+
+def returnStrBoolean(x):
+    if x:
+        return "success"
+    else:
+        return "error"
 
 if __name__ == '__main__':
     dcap_solr = Dcap_solr()
