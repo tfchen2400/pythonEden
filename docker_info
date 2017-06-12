@@ -1,0 +1,67 @@
+私有
+/etc/docker/daemon.json
+{ "insecure-registries":["192.168.200.251:50000"] }
+
+----------------------------------------生成docker镜像----------------------------------
+
+docker run -itd --name python/python-oracle-link-10g centos
+
+yum -y install git
+
+git clone https://github.com/tfchen2400/oracle_link.git
+chmod -R 777 oracle_link/
+
+yum -y install epel-release
+yum -y install python-pip
+
+pip install --upgrade pip
+pip install simplejson
+pip install flask
+pip install flask_httpauth
+
+下载对应的cx_oracle的版本和对应的oracle客户端
+http://www.cnblogs.com/oubo/archive/2012/07/24/2607034.html
+
+rpm包
+https://sourceforge.net/projects/cx-oracle/files/5.1.2/cx_Oracle-5.1.2-10g-py27-1.x86_64.rpm/download
+zip包
+http://192.168.60.95/linux_X86-64_client/instantclient-basic-linux.x64-12.2.0.1.0.zip
+
+unzip instantclient-basic-linux.x64-12.2.0.1.0.zip
+cp * /usr/lib
+
+yum install libaio*
+
+还要安装 libaio*的包
+
+rpm -ivh cx_Oracle-5.2.1-12c-py27-1.x86_64.rpm
+
+yum install net-tools -y
+
+开启app.py
+
+一切正常之后 打包镜像
+docker commit -m 'python_oracle_link' -a 'chentf' cb2a 192.168.200.251:50000/python/python-oracle-link-12g:v1.0
+push 镜像
+docker push 192.168.200.251:50000/python/python-oracle-link-12g:v1.0
+
+----------------------------------------生成docker镜像----------------------------------
+
+
+
+----------------------------------------部署docker镜像----------------------------------
+python-oracle-link-11g
+docker pull 192.168.200.251:50000/python/python-oracle-link-11g:v1.0
+
+docker run -itd -p 5000:5000 192.168.200.251:50000/python/python-oracle-link-11g:v1.0
+
+运行程序 nohup python app.py &
+
+docker pull 192.168.200.251:50000/python/python-oracle-link-12g:v1.0
+docker run -itd -p 5001:5000 192.168.200.251:50000/python/python-oracle-link-12g:v1.0
+
+----------------------------------------部署docker镜像----------------------------------
+oracle_12c_64位  192.168.210.120:5001
+oracle_11g_64位  192.168.210.120:5000
+oracle_10g_64位  192.168.210.120:4999
+

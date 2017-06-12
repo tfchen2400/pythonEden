@@ -3,21 +3,21 @@
 """
     这是Dcap_db的封装类
 """
-import os
-import time
-import pymssql
-import pyodbc
 import logging
 import logging.config
-import simplejson
-import cx_Oracle
-import jpype
+import pymssql
+import pyodbc
 from multiprocessing import Process
+
+import cx_Oracle
+import simplejson
+from flask import json
 
 from dcap_db import jdbc
 from dcap_db.Db_info import Db_info
 from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
+from dcap_db.req_restful import ReqRestful
 
 __author__ = '陈腾飞(水言Dade)'
 
@@ -39,7 +39,7 @@ class Dcap_db(object):
         pass
 
     def do_sqls(self):
-        if (self.dbinfo.type == "msSql"):
+        if (self.dbinfo.type == "MSSQL"):
             for m in self.methods:
                 self.logger.info("use method " + m + " #####################", self.uuid)
                 self.report.info("@@@@ " + "use method start" + m + " @@@@", self.uuid)
@@ -65,7 +65,7 @@ class Dcap_db(object):
                     jdbcStr = "jdbc:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + ";databaseName=" + self.dbinfo.database + ";"
                     user = self.dbinfo.user
                     pwd = self.dbinfo.password
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
@@ -74,7 +74,7 @@ class Dcap_db(object):
                     jdbcStr = "jdbc:jtds:sqlserver://" + self.dbinfo.host + ":" + self.dbinfo.port + "/" + self.dbinfo.database
                     user = self.dbinfo.user
                     pwd = self.dbinfo.password
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
@@ -90,46 +90,101 @@ class Dcap_db(object):
                 if m == "cx_oracle":
                     self.do_sqls_cx_oracle()
                 elif m == "ojdbc5":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc6":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc7":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc8":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "classes12":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "ojdbc14":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     # print('Child process will start.')
                     p.start()
                     p.join()
                     # self.do_sql_java("ojdbc14")
                 elif m == "classes12":
-                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid,))
+                    p = Process(target=jdbc.do_sql_java, args=(m, jdbcStr, user, pwd, self.sqls, self.uuid, self.dbinfo,))
                     p.start()
                     p.join()
+                elif m == "linux_X86_64_OCI_12":
+                    self.do_sqls_linux_X86_64_OCI(12)
+                elif m == "linux_X86_64_OCI_11":
+                    self.do_sqls_linux_X86_64_OCI(11)
+                elif m == "linux_X86_64_OCI_10":
+                    self.do_sqls_linux_X86_64_OCI(10)
+
                 self.report.info("@@@@ " + "use method end" + m + " @@@@", self.uuid)
+
+    def do_sqls_linux_X86_64_OCI(self, version):
+        urlport = ""
+        if version == 10:
+            urlport = 4999
+        elif version == 11:
+            urlport = 5000
+        elif version == 12:
+            urlport = 5001
+        else:
+            return
+
+        for sql_info in self.sqls:
+            sql_info_json = simplejson.loads(self.redis.hget(self.uuid + "sql", sql_info["uuid"]))
+
+            clientsJa = sql_info_json.get("clients")
+            if clientsJa == None:
+                clientsJa = []
+
+            pymssql_jo = {}
+            pymssql_jo["client"] = "linux_X86_64_OCI_" + str(version)
+            pymssql_jo["productDb"] = self.dbinfo.name
+
+            req = ReqRestful()
+            info = {}
+            info["host"] = self.dbinfo.host
+            info["port"] = self.dbinfo.port
+            info["database"] = self.dbinfo.database
+            info["user"] = self.dbinfo.user
+            info["password"] = self.dbinfo.password
+            # sql_info = {}
+            # sql_info["sql"] = "select * from dept where dname = :dname"
+            # par = {}
+            # par["dname"] = "ACCOUNTING"
+            # sql_info["par"] = par
+            info["sql_info"] = sql_info
+
+            s = json.dumps(info)
+            test_data = {"info": s}
+            req.data = test_data
+            req.url = "http://192.168.210.120:" + str(urlport) + "/todo/api/v1.0/linkOracleOci"
+            result = req.do_request()
+            ret_dict = simplejson.loads(result)
+            pymssql_jo["runsql"] = ret_dict["result"]
+            pymssql_jo["errorInfo"] = ret_dict["message"]
+            clientsJa.append(pymssql_jo)
+            sql_info_json["clients"] = clientsJa
+            self.redis.hset(self.uuid + "sql", sql_info["uuid"], simplejson.dumps(sql_info_json))
 
     def do_sqls_pymssql(self):
         # print("do_sqls_pymssql")
@@ -150,7 +205,7 @@ class Dcap_db(object):
 
             pymssql_jo = {}
             pymssql_jo["client"] = "pymssql"
-
+            pymssql_jo["productDb"] = self.dbinfo.name
             sql = sql_info["sql"]
             # print("runsql", sql)
             try:
@@ -222,7 +277,7 @@ class Dcap_db(object):
 
             pymssql_jo = {}
             pymssql_jo["client"] = type
-
+            pymssql_jo["productDb"] = self.dbinfo.name
             sql = sql_info["sql"]
             try:
                 cursor.execute(sql)

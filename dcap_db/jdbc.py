@@ -12,7 +12,7 @@ from dcap_db.Dcap_redis import Dcap_redis
 from dcap_db.Report import Report
 
 
-def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
+def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid, dbinfo):
     report = Report()
     # baseUrl = os.path.abspath('.')
     baseUrl = findPath("tag")
@@ -52,7 +52,7 @@ def do_sql_java(jdbcType, jdbcStr, uname, pwd, sqls, uuid):
 
             pymssql_jo = {}
             pymssql_jo["client"] = jdbcType
-
+            pymssql_jo["productDb"] = dbinfo.name
             sql = sql_info["sql"]
             par_str = json.dumps(sql_info["par"])
             res = oracleMain.runSql(jdbcStr, uname, pwd, sql, par_str, jdbcType)

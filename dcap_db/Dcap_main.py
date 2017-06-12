@@ -54,7 +54,8 @@ class Dcap_main(object):
         self.uuid = dataDict.get("uuid")
         # 如果没有uuid 就生成一个uuid
         if (self.uuid == None):
-            self.uuid = str(uuid.uuid1())
+            self.uuid = time.strftime("%Y%m%d%H%M%S", time.localtime())
+            # self.uuid = str(uuid.uuid1())
 
         # 生成一个返回的hashmap
         self.redis.hset(self.uuid, 'uuid', self.uuid)
@@ -124,15 +125,14 @@ class Dcap_main(object):
 
 if __name__ == '__main__':
     data = {}
-    # db info
     db_info = Db_info()
     db_info.type = "oracle"
-    db_info.database = "orcl"
-    db_info.user = "scott"
-    db_info.password = "scott"
-    db_info.host = "192.168.200.179"
+    db_info.database = "ORCLCDB"
+    db_info.user = "sys as sysdba"
+    db_info.password = "hzmc321#"
+    db_info.host = "192.168.60.95"
     db_info.port = "1521"
-
+    db_info.name = "chentfdb"
     # db_info2 = Db_info()
     # db_info2.type = "msSql"
     # db_info2.charset = "utf8"
@@ -141,6 +141,7 @@ if __name__ == '__main__':
     # db_info2.password = "Ctf12345"
     # db_info2.host = "192.168.60.109"
     # db_info2.port = "1433"
+    # db_info2.name = "chentfdb"
 
     # 生产库
     servers = []
@@ -160,7 +161,10 @@ if __name__ == '__main__':
     # clients.append("sqljdbc4")
     # clients.append("jtds13")
 
-    clients.append("cx_oracle")
+    # clients.append("cx_oracle")
+    clients.append("linux_X86_64_OCI_12")
+    clients.append("linux_X86_64_OCI_11")
+    clients.append("linux_X86_64_OCI_10")
 
     sqls = []
     # sql_info = {}
@@ -195,6 +199,12 @@ if __name__ == '__main__':
     sql_info["uuid"] = "123"
     sqls.append(sql_info)
 
+    sql_info = {}
+    sql_info["sql"] = "select 1 from dual"
+    par = {}
+    sql_info["par"] = par
+    sql_info["uuid"] = "123"
+    sqls.append(sql_info)
 
     data["servers"] = servers
     data["clients"] = clients
