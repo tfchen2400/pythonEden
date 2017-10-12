@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-list4 = [1, 2, 3, 4]
-
-
 def getTwoInList(list):
     result = set()
     for i in range(len(list)):
