@@ -5,7 +5,14 @@ import pickle
 import redis
 
 # 普通连接
-import simplejson
+r = redis.Redis(host="192.168.59.162", port=6379, db=0, password="tfchen5211")
+r.set("wein", "tiancai2")
+var_wenn = r.get("wein")
+var_wenn = str(var_wenn, "utf-8")
+print(var_wenn)
+print(str(r.get("chentf"), "utf-8"))
+
+pass
 
 r = redis.Redis(host="192.168.60.95", port=6379, db=0, password="tfchen5211")
 r.set("wein", "tiancai2")
